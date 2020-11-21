@@ -9,13 +9,13 @@
 ;
 ;
 ;
-LSTOUT	EQU	05H		;printer output
-DCONIO	EQU	06H		;direct console I/O
+LSTOUT	.EQU	05H		;printer output
+DCONIO	.EQU	06H		;direct console I/O
 ;
-RUBOUT	EQU	7FH
-INPREQ	EQU	0FFH		;DCONIO input request
+RUBOUT	.EQU	7FH
+INPREQ	.EQU	0FFH		;DCONIO input request
 ;
-EPRINT:	DEFB	0		;printer flag
+EPRINT:	.BYTE	0		;printer flag
 				;0=disabled, 1=enabled
 ;
 SYSENT:	PUSH	BC
@@ -99,7 +99,7 @@ PKEY1:	LD	L,E
 	LD	H,0
 	JHPUSH			;(S1)LB<--CHR
 ;
-PEMIT:	DEFW	$+2		;(EMIT) orphan
+PEMIT:	.WORD	$+2		;(EMIT) orphan
 	POP	DE		;(E)<--(S1)LB = CHR
 	LD	A,E
 	CP	BSOUT
