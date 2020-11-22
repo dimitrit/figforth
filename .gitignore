@@ -1,0 +1,7 @@
+*.rom
+*.com
+*.bin
+*.img
+*.lst
+.idea
+.DS_Store
