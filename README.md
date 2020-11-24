@@ -1,6 +1,6 @@
-# FIG-FORTH 1.1 for Z80
+# fig-FORTH 1.1 for Z80
 
-A FIG-FORTH(1) implementation for the Z80 that can be built using TASM (Telemark Assembler):
+A fig-FORTH<sup>1</sup> implementation for the Z80 that can be built using TASM (Telemark Assembler):
 
 ```
 $ tasm -80 -b figforth.z80 forth.com forth.lst
@@ -23,4 +23,5 @@ A>
 ```
 
 ## References
-1. FIG-Forth Implementations. Retrieved November 23, 2020, from http://www.forth.org/fig-forth/contents.html
+1. William Ragsdale, _'fig-FORTH INSTALLATION MANUAL'_ (San Carlos, CA: FORTH INTEREST GROUP, 1980)
+2. John James, _‘What Is Forth? A Tutorial Introduction’_, in BYTE, 5.8 (1980), 100–26
