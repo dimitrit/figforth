@@ -6,18 +6,17 @@ A fig-FORTH<sup>1</sup> implementation for the Z80 that can be built using TASM 
 $ tasm -80 -b figforth.z80 forth.com forth.lst
 ```
 
-The resulting `forth.com` executable can be run in CP/M: 
+The resulting `forth.com` executable can be run in CP/M. For example<sup>2</sup>:
 ```
 A>FORTH STARTUP.FRT
 
 Z80 fig-FORTH 1.1g
-: HELLO 5 0 DO CR ." Hello World! " LOOP ; ok
-HELLO 
-Hello World! 
-Hello World! 
-Hello World! 
-Hello World! 
-Hello World! ok
+: CUBE ( N -> N. CUBE A NUMBER) 
+   DUP DUP ( NOW THERE ARE THREE COPIES ) 
+   * *     ( GET THE CUBE ) 
+   ; ok
+5 CUBE . 125 ok
+-28 CUBE . -21952 ok
 BYE 
 A>
 ```
