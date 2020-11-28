@@ -1,4 +1,4 @@
-# fig-FORTH 1.1 for Z80
+# fig-FORTH 1.3 for Z80
 
 A fig-FORTH<sup>1</sup> implementation for the Z80 that can be built using TASM (Telemark Assembler):
 
@@ -10,13 +10,14 @@ The resulting `forth.com` executable can be run in CP/M. For example<sup>2</sup>
 ```
 A>FORTH STARTUP.FRT
 
-Z80 fig-FORTH 1.1g
-: CUBE ( N -> N. CUBE A NUMBER) 
-   DUP DUP ( NOW THERE ARE THREE COPIES ) 
-   * *     ( GET THE CUBE ) 
+Z80 fig-FORTH 1.3a
+: CUBE ( N -> N.  CUBE A NUMBER ) 
+   DUP DUP  ( NOW THERE ARE THREE COPIES ) 
+   * * 
    ; ok
 5 CUBE . 125 ok
 -28 CUBE . -21952 ok
+HEX 17 CUBE BINARY . DECIMAL 10111110000111 ok
 BYE 
 A>
 ```
