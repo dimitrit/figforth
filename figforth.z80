@@ -1,5 +1,4 @@
-	.TITLE	Z80 fig-FORTH 1.1 g
-;	SUBTTL	Adaptive version by EHR
+	.TITLE	Z80 fig-FORTH 1.3 a
 ;
 ;
 ; Modified frm FIG document keyed by Dennis L. Wilson 800907
@@ -49,12 +48,17 @@
 ; Disc I/O has been modified a la Albert van der Horst (HCCH) to employ
 ; CP/M 2.x's random access feature.
 ; ----------------------------------------------------------------------
+; Adaptive version by EHR
+; ----------------------------------------------------------------------
+; Upgraded to v1.3 by Dimitri Theulings - 11/2020 - changes marked 1.3
+; Changes are based on '8080 FIG-FORTH 1.3 VERSION 0 18JUL81'
+; ----------------------------------------------------------------------
 ;
 ;	Release & Version numbers
 ;
 FIGREL	.EQU	1		;FIG RELEASE #
-FIGREV	.EQU	1		;FIG REVISION #
-USRVER	.EQU	67H		;USER VERSION # g by DLW/EHR/AvdH
+FIGREV	.EQU	3		;FIG REVISION #
+USRVER	.EQU	61H		;USER VERSION # a by DT
 ;
 ;Console & printer drivers are in external source named
 ;CONPRTIO.FTH & disc drivers in DISCIO.FTH. It has 4 screen
@@ -375,16 +379,37 @@ XDO:	.WORD	$+2
 	.WORD	XDO-7
 IDO:	.WORD	$+2		;(S1)<--(R1), (R1) UNCHANGED
 	LD	HL,(RPP)
-	LD	E,(HL)		;(DE)<--(R1)
+IDO1:	LD	E,(HL)		;(DE)<--(R1)
 	INC	HL
 	LD	D,(HL)
 	PUSH	DE		;(S1)<--(DE)
 	JNEXT
 ;
+	.BYTE	82H	; I'	1.3
+	.BYTE	'I'
+	.BYTE	$27+$80
+	.WORD	IDO-4
+IPRIM	.DW	$+2
+	LD	HL,(RPP)
+	INC	HL
+	INC	HL	; ((HL)) = (R2)
+	JR	IDO1
+;
+	.BYTE	81H	; J	1.3
+	.BYTE	'J'+$80
+	.WORD	IPRIM-5
+J	.WORD	$+2
+	LD	HL,(RPP)
+	INC	HL
+	INC	HL
+	INC	HL
+	INC	HL	; ((HL)) = (R3)
+	JR	IDO1
+;
 	.BYTE	85H		;DIGIT
 	.TEXT	"DIGI"
 	.BYTE	'T'+$80
-	.WORD	IDO-4
+	.WORD	J-4
 DIGIT:	.WORD	$+2
 	POP	HL		;(L)<--(S1)LB = BASE VALUE
 	POP	DE		;(E)<--(S2)LB = ASCII CHR TO BE CONVERTED
@@ -547,10 +572,29 @@ CMOVE:	.WORD	$+2
 EXCMOV:	EXX			;/ RESTORE IP
 	JNEXT
 ;
+	.BYTE	86H	; >CMOVE	1.3
+	.TEXT	">CMOV"
+	.BYTE	'E'+$80
+	.WORD	CMOVE-8
+GCMOV	.WORD	$+2
+	EXX			; SAVE IP
+	POP	BC		; (BC)<--(S1)= #CHRs
+	POP	DE		; (DE)<--(S2)= DEST ADDR
+	POP	HL		; (HL)<--(S3)= SOURCE ADDR
+	ADD HL,BC	; (HL) <- END SOURCE ADDR
+	EX DE,HL
+	ADD HL,BC	; (DE) <- END DEST ADDR
+	EX DE,HL
+	LD	A,B
+	OR	C		; BC=0?
+	JR	Z,EXCMOV	; YES, DON'T MOVE ANYTHING
+	LDDR			; REVERSE XFER STRING 
+	JR	EXCMOV	; 
+;
 	.BYTE	82H		;U*   16*16 unsigned multiply
 	.BYTE	'U'		;994 T cycles average (8080)
 	.BYTE	'*'+$80
-	.WORD	CMOVE-8
+	.WORD	GCMOV-9
 USTAR:	.WORD	$+2
 	POP	DE		;(DE)<--MPLIER
 	POP	HL		;(HL)<--MPCAND
@@ -645,10 +689,16 @@ USLA7:	POP	BC		;RESTORE IP
 	PUSH	DE		;(S1)<--QUOTIENT
 	JNEXT
 ;
+	.BYTE	85H	; U/MOD		1.3
+	.TEXT	"U/MO"	; SAME AS U/
+	.BYTE	'D'+80H
+	.WORD	USLAS-5
+USLMD	.WORD	USLAS+2
+;
 	.BYTE	83H		;AND
 	.TEXT	"AN"
 	.BYTE	'D'+$80
-	.WORD	USLAS-5
+	.WORD	USLMD-8
 ANDD:	.WORD	$+2		;(S1)<--(S1) AND (S2)
 	POP	DE
 	POP	HL
@@ -803,10 +853,16 @@ FROMR:	.WORD	$+2
 	.WORD	FROMR-5
 RR:	.WORD	IDO+2
 ;
+	.BYTE	82H	; R@		1.3
+	.BYTE	'R'
+	.BYTE	'@'+$80
+	.WORD	RR-4
+RAT	.WORD	IDO+2
+;
 	.BYTE	82H		;0=
 	.BYTE	'0'
 	.BYTE	'='+$80
-	.WORD	RR-4
+	.WORD	RAT-5
 ZEQU:	.WORD	$+2
 	POP	HL
 	LD	A,L
@@ -869,10 +925,16 @@ MINUS:	.WORD	$+2
 	SBC	HL,DE		;/ (HL)<--(DE)2's COMPL.
 	JHPUSH
 ;
+	.BYTE	86H	; NEGATE	1.3
+	.TEXT	"NEGAT"
+	.BYTE	'E'+$80
+	.WORD	MINUS-8
+NEG	.WORD	MINUS+2
+;
 	.BYTE	86H		;DMINUS
 	.TEXT	"DMINU"
 	.BYTE	'S'+$80
-	.WORD	MINUS-8
+	.WORD	NEG-9
 DMINU:	.WORD	$+2
 	POP	HL		;(HL)<--d1H
 	POP	DE		;(DE)<--d1L
@@ -937,10 +999,22 @@ TDUP:	.WORD	$+2
 	PUSH	HL
 	JP	DPUSH
 ;
+	.BYTE	85H	; 2DROP		1.3
+	.TEXT	"2DRO"
+	.BYTE	'P'+$80
+	.WORD	TDUP-7
+TDROP	.WORD	$+2
+	POP	HL
+	POP	HL
+	JNEXT
+;
+; TODO: 2SWAP
+; TODO: 2OVER
+;
 	.BYTE	82H		;+!
 	.BYTE	'+'
 	.BYTE	'!'+$80
-	.WORD	TDUP-7
+	.WORD	TDROP-8
 PSTOR:	.WORD	$+2
 	POP	HL		;(HL)<--VAR ADDR
 	POP	DE		;(DE)<--NUMBER
@@ -1489,9 +1563,27 @@ EQUAL:	.WORD	$+2		;/
 	INC	L		;/ TRUE
 EXEQU:	JHPUSH			;/
 ;
+	.BYTE	82H	; <>		1.3
+	.BYTE	'<'
+	.BYTE	'>'+$80
+	.WORD	EQUAL-4
+NEQU	.WORD	DOCOL
+	.WORD	SUBB
+	.WORD	ZEQU
+	.WORD	ZEQU
+	.WORD	SEMIS
+;
+	.BYTE	84H	; =NOT		1.3
+	.TEXT	"=NO"
+	.BYTE	'T'+$80
+	.WORD	NEQU-5
+ENOT	.WORD	DOCOL
+	.WORD	NEQU
+	.WORD	SEMIS
+;
 	.BYTE	81H		;  <
 	.BYTE	'<'+$80
-	.WORD	EQUAL-4
+	.WORD	ENOT-7
 LESS:	.WORD	$+2
 	POP	DE
 	POP	HL		;  (HL) (DE) <
@@ -1538,20 +1630,36 @@ GREAT1:	BIT	7,H		;/ (H) NEGATIVE?
 	INC	L		;/ (HL)<--TRUE
 GREAT2:	JHPUSH
 ;
+	.BYTE	82H	; 0>		1.3
+	.BYTE	'0'
+	.BYTE	'>'+$80
+	.WORD	GREAT-4
+ZGREA	.WORD	DOCOL
+	.WORD	ZERO,GREAT
+	.WORD	SEMIS
+;
 	.BYTE	83H		;ROT
 	.TEXT	"RO"
 	.BYTE	'T'+$80
-	.WORD	GREAT-4
+	.WORD	ZGREA-5
 ROT:	.WORD	$+2
 	POP	DE
 	POP	HL
 	EX	(SP),HL
 	JP	DPUSH
 ;
+	.BYTE	84H	; -ROT		1.3
+	.TEXT	"-RO"
+	.BYTE	'T'+$80
+	.WORD	ROT-6
+DROT	.WORD	DOCOL
+	.WORD	ROT,ROT
+	.WORD	SEMIS
+;
 	.BYTE	85H		;SPACE
 	.TEXT	"SPAC"
 	.BYTE	'E'+$80
-	.WORD	ROT-6
+	.WORD	DROT-7
 SPACE:	.WORD	DOCOL
 	.WORD	BL
 	.WORD	EMIT
@@ -1569,10 +1677,16 @@ DDUP:	.WORD	$+2		;/
 	PUSH	HL		;/
 EXDDUP:	JHPUSH
 ;
+	.BYTE	84H	; ?DUP		1.3
+	.TEXT	"?DU"
+	.BYTE	'P'+$80
+	.WORD	DDUP-7
+QDUP	.WORD	DDUP+2
+;
 	.BYTE	88H		;TRAVERSE
 	.TEXT	"TRAVERS"
 	.BYTE	'E'+$80
-	.WORD	DDUP-7
+	.WORD	QDUP-7
 TRAV:	.WORD	DOCOL
 	.WORD	SWAP
 TRAV1:	.WORD	OVER		;BEGIN
@@ -1794,10 +1908,19 @@ DEC:	.WORD	DOCOL
 	.WORD	STORE
 	.WORD	SEMIS
 ;
+	.BYTE	86H	; BINARY	1.3
+	.TEXT	"BINAR"
+	.BYTE	'Y'+$80
+	.WORD	DEC-10
+BIN	.WORD	DOCOL
+	.WORD	LIT,2
+	.WORD	BASE,STORE
+	.WORD	SEMIS
+;
 	.BYTE	87H		;(;CODE)
 	.TEXT	"(;CODE"
 	.BYTE	')'+$80
-	.WORD	DEC-0AH
+	.WORD	BIN-9
 PSCOD:	.WORD	DOCOL
 	.WORD	FROMR
 	.WORD	LATES
@@ -3518,10 +3641,19 @@ BYE:	.WORD	DOCOL		;/A
 	.WORD	BDOS		;/A return to CP/M
 	.WORD	SEMIS		;/A won't get this far, just for pretty
 ;
+	.BYTE	84H	; PAGE		1.3
+	.TEXT	"PAG"
+	.BYTE	'E'+$80
+	.WORD	BYE-6
+PAG	.WORD	DOCOL
+	.WORD	LIT,FF
+	.WORD	EMIT,CR
+	.WORD	SEMIS
+;
 	.BYTE	84H		;LIST
 	.TEXT	"LIS"
 	.BYTE	'T'+$80
-	.WORD	BYE-6
+	.WORD	PAG-7
 LIST:	.WORD	DOCOL,DEC
 	.WORD	CR,DUP
 	.WORD	SCR,STORE
@@ -3586,10 +3718,24 @@ TRIA2:	.WORD	XLOOP,TRIA1-$-2	; DT - ENDIF
 	.WORD	MESS,CR
 	.WORD	SEMIS
 ;
+	.BYTE	84H	; SHOW		1.3
+	.TEXT	"SHO"
+	.BYTE	'W'+$80
+	.WORD	TRIAD-8
+SHOW	.WORD	DOCOL
+	.WORD	ONEP,SWAP
+	.WORD	XDO
+SHOW1	.WORD	PAG,IDO
+	.WORD	TRIAD
+	.WORD	LIT,3
+	.WORD	XPLOO
+	.WORD	SHOW1-$
+	.WORD	SEMIS
+;
 	.BYTE	84H		;.CPU
 	.TEXT	".CP"
 	.BYTE	'U'+$80
-	.WORD	TRIAD-8
+	.WORD	SHOW-7
 DOTCPU:	.WORD	DOCOL
 	.WORD	BASE,AT
 	.WORD	LIT,36
