@@ -1,0 +1,125 @@
+                        EDITOR USER MANUAL
+
+                         by Bill Stoddart
+                     of FIG, United Kingdom
+
+FORTH organizes its mass storage into "screens" of 1024 characters.
+If, for example, a diskette of 250k byte capacity is used entirely
+for storing text, it will appear to the user as 250 screens
+numbered O to 249.
+
+Each screen is organized as 16 lines with 64 characters per line.
+The FORTH screens are merely an arrangement of virtual memory and
+need not correspond exactly with the screen format of a particular
+terminal.
+
+               Selecting a Screen and Input of Text
+
+To start an editing session the user types EDITOR to invoke the
+appropriate vocabulary.
+
+The screen to be edited is then selected, using either:
+
+    n LIST ( list screen n and select it for editing ) OR
+    n CLEAR ( clear screen n and select for editing )
+
+To input new test to screen n after LIST or CLEAR the P (put)
+command is used.
+
+Example:
+
+     O P THIS IS HOW
+     1 P TO INPUT TEXT
+     2 P TO LINES O, 1, AND 2 OF THE SELECTED SCREEN.
+
+
+                         Line Editing
+
+During this descirption of the editor, reference is made to PAD.
+This is a text buffer which may hold a line of text used by or
+saved with a line editing command, or a text string to be found or
+deleted by a string editing command.
+
+PAD can be used to transfer a line from one screen to another, as
+well as to perform edit operations within a single screen.
+
+                      Line Editor Commands
+
+n H     Hold line n at PAD (used by system more often than by user)
+
+n D     Delete line n but hold it in PAD. Line 15 becomes blank`
+        as lines n+1 to 15 move up 1 line.
+
+n T     Type line n and save it in PAD.
+
+n R     Replace line n with the text in PAD.
+
+n I     Insert the text from PAD at line n, moving the old line n
+        and following lines down. Line 15 is lost. _
+
+n E     Erase line n with blanks.
+
+n S     Spread at line n. n and subsequent lines move down 1
+        line. Line n becomes blank. Line 15 is lost.
+
+
+             Cursor Control and String Editing
+
+The screen of text being edited resides in a buffer area of
+storage. The editing cursor is a variable holding an offset into
+this buffer area. Commands are provided for the user to position
+the cursor, either directly or by searching for a string of buffer
+text, and to insert or delete text at the cursor position.
+
+               Commands to Position the Cursor
+
+TOP        Position the cursor at the start of the screen.
+
+N M        Move the cursor by a signed amount n and print the cursor
+           line. The position of the cursor on its line is shown by
+           a __ (underline).
+
+                   String Editing Commands
+
+F text     Search forward from the current cursor position until
+           string "text" is found. The cursor is left at the end
+           of the text string, and the cursor line is printed.
+           If the string is not found an error message is given
+           and the cursor is repositioned at the top of screen.
+
+B          Used after F to back up the cursor by the length of
+           the most recent text.
+
+N          Find the next occurrence of the string found by an F
+           command.
+
+X text 	   Find and delete the string "text."
+
+C text 	   Copy in text to the cursor line at the cursor position
+
+TILL text  Delete on the cursor line from the cursor till the end
+           of the text string "text."
+
+NOTE: 	   Typing C with no text will copy a null into the text
+	   at the cursor position. This will abruptly stop later
+	   compiling! To delete this error type TOP X 'return‘.
+
+
+
+                  Screen Editing Commands
+
+n LIST       List screen n and select it for editing
+
+n CLEAR      Clear screen n with blanks and select it for editing
+
+n1 n2 COPY   Copy screen n1 to screen n2.
+
+L     	     List the current screen. The cursor line is relisted
+	     after the screen listing, to show the cursor position.
+
+FLUSH 	     Used at the end of an editing session to ensure that
+	     all entries and updates of text have been transferred
+	     to disc.
+
+
+
