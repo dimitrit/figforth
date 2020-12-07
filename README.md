@@ -23,8 +23,8 @@ BYE
 A>
 ```
 
-## Editor
-The fig-FORTH EDITOR<sup>3</sup> can be loaded from the `SCREENS.FRT` file:
+## fig-FORTH Editor
+The fig-FORTH EDITOR<sup>3</sup> is included in the `SCREENS.FRT` file:
 ```
 A>FORTH SCREENS.FRT
 
@@ -47,16 +47,7 @@ SCR # 1
   1 
   2 
   3 
-  4 
-  5 
-  6 
-  7 
-  8 
-  9 
- 10 
- 11 
- 12 
- 13 
+ ... 
  14 
  15 
 ok
