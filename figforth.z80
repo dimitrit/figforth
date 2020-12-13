@@ -58,7 +58,7 @@
 ;
 FIGREL	.EQU	1		;FIG RELEASE #
 FIGREV	.EQU	3		;FIG REVISION #
-USRVER	.EQU	61H		;USER VERSION # a by DT
+USRVER	.EQU	62H		;USER VERSION # DT
 ;
 ;Console & printer drivers are in external source named
 ;CONPRTIO.FTH & disc drivers in DISCIO.FTH. It has 4 screen

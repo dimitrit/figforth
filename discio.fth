@@ -2,6 +2,7 @@
 ;
 ; Last update:
 ;
+; 201212 - added FILE
 ; 881228 - EXTEND's R/W address now initialized with blanks
 ; 860120 - EXTEND's R/W address now HERE, was Osborne video ram
 ; 850511 - saved BC' in 'BDOS'
@@ -28,6 +29,7 @@ CLSFIL	.EQU	10H		;close file
 SETDMA	.EQU	1AH		;set DMA address
 WRTRND	.EQU	22H		;write random
 ;
+MAXLEN	.EQU	08H		;max filename length
 ;
 ;	FORTH variables & constants used in disc interface
 ;
@@ -80,7 +82,8 @@ PBUF:	.WORD	DOCOL
 	.WORD	LIT,CO
 	.WORD	PLUS,DUP
 	.WORD	LIMIT,EQUAL
-	.WORD	ZBRAN,PBUF1-$-2	; DT
+	.WORD	ZBRAN
+	.WORD	PBUF1-$
 	.WORD	DROP,FIRST
 PBUF1:	.WORD	DUP,PREV
 	.WORD	AT,SUBB
@@ -132,11 +135,13 @@ BUFFE:	.WORD	DOCOL,USE
 	.WORD	AT,DUP
 	.WORD	TOR
 BUFF1:	.WORD	PBUF		; won't work if single buffer
-	.WORD	ZBRAN,BUFF1-$-2	; DT
+	.WORD	ZBRAN
+	.WORD	BUFF1-$
 	.WORD	USE,STORE
 	.WORD	RR,AT
 	.WORD	ZLESS
-	.WORD	ZBRAN,BUFF2-$-2	; DT
+	.WORD	ZBRAN
+	.WORD	BUFF2-$
 	.WORD	RR,TWOP
 	.WORD	RR,AT
 	.WORD	LIT,7FFFH
@@ -158,9 +163,11 @@ BLOCK:	.WORD	DOCOL,OFSET
 	.WORD	AT,RR
 	.WORD	SUBB
 	.WORD	DUP,PLUS
-	.WORD	ZBRAN,BLOC1-$-2	; DT
+	.WORD	ZBRAN
+	.WORD	BLOC1-$
 BLOC2:	.WORD	PBUF,ZEQU
-	.WORD	ZBRAN,BLOC3-$-2	; DT
+	.WORD	ZBRAN
+	.WORD	BLOC3-$
 	.WORD	DROP,RR
 	.WORD	BUFFE,DUP
 	.WORD	RR,ONE
@@ -170,7 +177,8 @@ BLOC3:	.WORD	DUP,AT
 	.WORD	RR,SUBB
 	.WORD	DUP,PLUS
 	.WORD	ZEQU
-	.WORD	ZBRAN,BLOC2-$-2	; DT
+	.WORD	ZBRAN
+	.WORD	BLOC2-$
 	.WORD	DUP,PREV
 	.WORD	STORE
 BLOC1:	.WORD	FROMR,DROP
@@ -227,9 +235,9 @@ FLUSH:	.WORD	DOCOL
 	.WORD	ZERO,XDO
 FLUS1:	.WORD	ZERO,BUFFE
 	.WORD	DROP
-	.WORD	XLOOP,FLUS1-$-2	; DT
+	.WORD	XLOOP
+	.WORD	FLUS1-$
 	.WORD	SEMIS
-;
 ;
 	.BYTE	86h			;/ EXTEND
 	.TEXT	"EXTEN"
@@ -278,11 +286,41 @@ EXTND2:
 	.WORD	DROP			; discard return code
 	.WORD	SEMIS
 ;
+	.BYTE	84H			; FILE used in the form 
+	.TEXT	"FIL"			;     FILE cccc
+	.BYTE	'E'+$80			; closes the current file and attempts
+	.WORD	EXTEND-09H		; to open the file with the given name.
+FILE:	.WORD	DOCOL
+	.WORD	FCB
+	.WORD	LIT,CLSFIL		; close existing file
+	.WORD	BDOS
+	.WORD	DROP
+	.WORD	MTBUF			; clear buffer
+	.WORD	BL,WORD			; get filename
+	.WORD	HERE
+	.WORD	COUNT
+	.WORD	LIT,MAXLEN	
+	.WORD	MIN			; truncate filename if required
+	.WORD	FCB
+	.WORD	ONEP
+	.WORD	DUP
+	.WORD	LIT,MAXLEN
+	.WORD	BLANK			; clear previous name from fcb
+	.WORD	SWAP
+	.WORD	CMOVE
+	.WORD	FCB
+	.WORD	LIT,OPNFIL		; open file
+	.WORD	BDOS
+	.WORD	LIT,0FFH		; check no error
+	.WORD	EQUAL
+	.WORD	LIT,8
+	.WORD	QERR
+	.WORD	SEMIS
 ;
 	.BYTE	84H		;LOAD
 	.TEXT	"LOA"
 	.BYTE	'D'+$80
-	.WORD	EXTEND-09H
+	.WORD	FILE-07H
 LOAD:	.WORD	DOCOL,BLK
 	.WORD	AT,TOR
 	.WORD	INN,AT
