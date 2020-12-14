@@ -1,4 +1,4 @@
-# fig-FORTH 1.3 for Z80
+# Z80 fig-FORTH 1.3
 
 A fig-FORTH<sup>1</sup> implementation for the Z80 that can be built using TASM (Telemark Assembler):
 
@@ -22,6 +22,12 @@ HEX 17 CUBE BINARY . DECIMAL 10111110000111 ok
 BYE 
 A>
 ```
+
+## Custom Words
+This fig-FORTH implementation includes the following custom words:
+
+`FILE cccc`   
+Closes the current .FRT file, and opens the given file. 
 
 ## fig-FORTH Editor
 The fig-FORTH EDITOR<sup>3</sup> is included in the `SCREENS.FRT` file:
