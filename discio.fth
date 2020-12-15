@@ -30,6 +30,7 @@ SETDMA	.EQU	1AH		;set DMA address
 WRTRND	.EQU	22H		;write random
 ;
 MAXLEN	.EQU	08H		;max filename length
+FTLEN	.EQU	03H		;filetype length
 ;
 ;	FORTH variables & constants used in disc interface
 ;
@@ -306,6 +307,12 @@ FILE:	.WORD	DOCOL
 	.WORD	DUP
 	.WORD	LIT,MAXLEN
 	.WORD	BLANK			; clear previous name from fcb
+	.WORD	LIT,FTYPE
+	.WORD	OVER
+	.WORD	LIT,MAXLEN
+	.WORD	PLUS
+	.WORD	LIT,FTLEN
+	.WORD	CMOVE			; set file type
 	.WORD	SWAP
 	.WORD	CMOVE
 	.WORD	FCB
@@ -316,6 +323,7 @@ FILE:	.WORD	DOCOL
 	.WORD	LIT,8
 	.WORD	QERR
 	.WORD	SEMIS
+FTYPE	.TEXT	"FTH"			; default file type
 ;
 	.BYTE	84H		;LOAD
 	.TEXT	"LOA"
