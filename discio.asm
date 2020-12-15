@@ -287,11 +287,18 @@ EXTND2:
 	.WORD	DROP			; discard return code
 	.WORD	SEMIS
 ;
+	.BYTE	85H
+	.TEXT	"FTYP"			; FTYPE ( -- addr )
+	.BYTE	'E'+$80			; Returns address of file type used
+	.WORD	EXTEND-09H		; with FILE.
+FTYPE	.WORD	DOCON,DEFFT
+DEFFT	.TEXT	"FTH"			; default file type
+;
 	.BYTE	84H			; FILE used in the form 
 	.TEXT	"FIL"			;     FILE cccc
-	.BYTE	'E'+$80			; closes the current file and attempts
-	.WORD	EXTEND-09H		; to open the file with the given name.
-FILE:	.WORD	DOCOL
+	.BYTE	'E'+$80			; Closes the current file and attempts
+	.WORD	FTYPE-08H		; to open the file with the given name.
+FILE:	.WORD	DOCOL			; The file type is determined by FTYPE.
 	.WORD	FCB
 	.WORD	LIT,CLSFIL		; close existing file
 	.WORD	BDOS
@@ -307,7 +314,7 @@ FILE:	.WORD	DOCOL
 	.WORD	DUP
 	.WORD	LIT,MAXLEN
 	.WORD	BLANK			; clear previous name from fcb
-	.WORD	LIT,FTYPE
+	.WORD	FTYPE
 	.WORD	OVER
 	.WORD	LIT,MAXLEN
 	.WORD	PLUS
@@ -323,7 +330,6 @@ FILE:	.WORD	DOCOL
 	.WORD	LIT,8
 	.WORD	QERR
 	.WORD	SEMIS
-FTYPE	.TEXT	"FTH"			; default file type
 ;
 	.BYTE	84H		;LOAD
 	.TEXT	"LOA"
