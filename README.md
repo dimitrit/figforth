@@ -1,12 +1,14 @@
 # Z80 fig-FORTH 1.3
 
-A fig-FORTH<sup>1</sup> implementation for the Z80 that can be built using TASM (Telemark Assembler):
-
+> ### _figForth Refuses to Die<sup>1</sup>_   
+<br/>    
+A fig-FORTH<sup>2</sup> implementation for the Z80 that can be built using TASM<sup>3</sup>:
+   
 ```
 $ tasm -80 -b figforth.z80 forth.com forth.lst
 ```
 
-The resulting `forth.com` executable can be run in CP/M. For example<sup>2</sup>:
+The resulting `forth.com` executable can be run in CP/M. For example<sup>4</sup>:
 ```
 A>FORTH
 
@@ -27,14 +29,12 @@ A>
 This fig-FORTH implementation includes the following custom words:
 
 `FILE cccc`   
-Closes the current .FRT file, and opens the given file. 
+Closes the current .FTH file, and opens the given file. 
 
 ## fig-FORTH Editor
-The fig-FORTH EDITOR<sup>3</sup> is included in the `SCREENS.FRT` file:
+The fig-FORTH EDITOR<sup>5</sup> is included in the `SCREENS.FTH` file:
 ```
-A>FORTH SCREENS.FRT
-
-Z80 fig-FORTH 1.3a
+FILE SCREENS ok
 7 12 INDEX 
 
   7 ( fig-FORTH EDITOR V2.0 SCR 1 of 6)
@@ -46,10 +46,10 @@ Z80 fig-FORTH 1.3a
 7 LOAD 2DROP MSG # 4  R MSG # 4  I MSG # 4  ok
 EDITOR ok
 1 CLEAR ok
-0 P EAT MORE PIES! ok
+0 P ( EAT MORE PIES! ) ok
 1 LIST 
 SCR # 1 
-  0 EAT MORE PIES!
+  0 ( EAT MORE PIES! )
   1 
   2 
   3 
@@ -58,11 +58,11 @@ SCR # 1
  15 
 ok
 FLUSH ok
-BYE 
-A>
 ```
 
 ## References
-1. William Ragsdale, _'fig-FORTH INSTALLATION MANUAL'_ (San Carlos, CA: FORTH INTEREST GROUP, 1980)
-2. John James, _‘What Is Forth? A Tutorial Introduction’_, in BYTE, 5.8 (1980), 100–26
-3. Bill Stoddart, _'EDITOR USER MANUAL'_, (London, UK: FIG United Kingdom, ND)
+1. C. H. Ting, _Systems Guide to figForth_, 3rd Edn (San Mateo, CA: Offete Enterprises, 2013), p. vi
+2. William Ragsdale, _'fig-FORTH INSTALLATION MANUAL'_ (San Carlos, CA: FORTH INTEREST GROUP, 1980)
+3. Thomas Anderson, _The Telemark Assembler (TASM) User's Manual (1998)_, Vintagecomputer <http://www.vintagecomputer.net/software/TASM/TASMMAN.HTM> [Accessed 14 December 2020]
+4. John James, _‘What Is Forth? A Tutorial Introduction’_, in BYTE, 5.8 (1980), 100–26
+5. Bill Stoddart, _'EDITOR USER MANUAL'_, (London, UK: FIG United Kingdom, ND)
