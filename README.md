@@ -1,6 +1,6 @@
 # Z80 fig-FORTH 1.3
 
-> ### _figForth Refuses to Die<sup>1</sup>_   
+> <h2><i>figForth Refuses to Die<sup>1</sup></i></h2>   
 <br/>    
 A fig-FORTH<sup>2</sup> implementation for the Z80 that can be built using TASM<sup>3</sup>:
    
@@ -30,6 +30,16 @@ This fig-FORTH implementation includes the following custom words:
 
 `FILE cccc`   
 Closes the current .FTH file, and opens the given file. 
+
+`FTYPE`&nbsp;&nbsp;&nbsp;&nbsp;`--- addr`   
+A constant containing the three character file type used by `FILE`.   
+Defaults to .FTH
+
+`P@`&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`n1 --- n2`   
+Reads hardware port **n1**.
+
+`P!`&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`n1 n2 ---`   
+Writes the value of **n1** to hardware port **n2**.
 
 ## fig-FORTH Editor
 The fig-FORTH EDITOR<sup>5</sup> is included in the `SCREENS.FTH` file:
