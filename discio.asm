@@ -280,17 +280,29 @@ EXTND2:
 	.WORD	CLSFIL
 	.WORD	BDOS			; close file
 	.WORD	DROP			; discard return code
+	.WORD	FOPEN
+	.WORD	DROP
+	.WORD	SEMIS
+;
+	.WORD	85H
+	.TEXT	"FOPE"			; FOPEN ( --- f )
+	.BYTE	'N'+$80			; Opens a file that currently exists in the
+	.WORD	EXTEND-9		; disk directory for the currently active
+FOPEN	.WORD	DOCOL			; user number. A true flag indicates failure.
 	.WORD	FCB
-	.WORD	LIT
-	.WORD	OPNFIL
-	.WORD	BDOS			; & re-open
-	.WORD	DROP			; discard return code
+	.WORD	LIT,OPNFIL		; open file
+	.WORD	BDOS
+	.WORD	LIT,0FFH		; check for error
+	.WORD	EQUAL
+	.WORD	DUP
+	.WORD	ZEQU
+	.WORD	WARN,STORE		; set WARNING variable
 	.WORD	SEMIS
 ;
 	.BYTE	85H
-	.TEXT	"FTYP"			; FTYPE ( -- addr )
+	.TEXT	"FTYP"			; FTYPE ( --- addr )
 	.BYTE	'E'+$80			; Returns address of file type used
-	.WORD	EXTEND-09H		; with FILE.
+	.WORD	FOPEN-8			; with FILE.
 FTYPE	.WORD	DOCON,DEFFT
 DEFFT	.TEXT	"FTH"			; default file type
 ;
@@ -322,19 +334,12 @@ FILE:	.WORD	DOCOL			; The file type is determined by FTYPE.
 	.WORD	CMOVE			; set file type
 	.WORD	SWAP
 	.WORD	CMOVE
-	.WORD	FCB
-	.WORD	LIT,OPNFIL		; open file
-	.WORD	BDOS
-	.WORD	LIT,0FFH		; check for error
-	.WORD	EQUAL
-	.WORD	DUP
-	.WORD	ZEQU
-	.WORD	WARN,STORE		; set WARNING variable
+	.WORD	FOPEN
 	.WORD	LIT,8
 	.WORD	QERR	
 	.WORD	SEMIS
 ;
-	.BYTE	84H		;LOAD
+	.BYTE	84H			;LOAD
 	.TEXT	"LOA"
 	.BYTE	'D'+$80
 	.WORD	FILE-07H
@@ -344,14 +349,14 @@ LOAD:	.WORD	DOCOL,BLK
 	.WORD	TOR,ZERO
 	.WORD	INN,STORE
 	.WORD	BSCR,STAR
-	.WORD	BLK,STORE	;BLK <-- SCR * B/SCR
-	.WORD	INTER		;INTERPRET FROM OTHER SCREEN
+	.WORD	BLK,STORE		;BLK <-- SCR * B/SCR
+	.WORD	INTER			;INTERPRET FROM OTHER SCREEN
 	.WORD	FROMR,INN
 	.WORD	STORE
 	.WORD	FROMR,BLK
 	.WORD	STORE,SEMIS
 ;
-	.BYTE	0C3H		;-->
+	.BYTE	0C3H			;-->
 	.TEXT	"--"
 	.BYTE	'>'+$80
 	.WORD	LOAD-7
