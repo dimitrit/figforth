@@ -325,10 +325,13 @@ FILE:	.WORD	DOCOL			; The file type is determined by FTYPE.
 	.WORD	FCB
 	.WORD	LIT,OPNFIL		; open file
 	.WORD	BDOS
-	.WORD	LIT,0FFH		; check no error
+	.WORD	LIT,0FFH		; check for error
 	.WORD	EQUAL
+	.WORD	DUP
+	.WORD	ZEQU
+	.WORD	WARN,STORE		; set WARNING variable
 	.WORD	LIT,8
-	.WORD	QERR
+	.WORD	QERR	
 	.WORD	SEMIS
 ;
 	.BYTE	84H		;LOAD

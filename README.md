@@ -5,15 +5,14 @@
 A fig-FORTH<sup>2</sup> implementation for the Z80 that can be built using TASM<sup>3</sup>:
    
 ```
-$ tasm -80 -b figforth.z80 forth.com forth.lst
+$ tasm -80 -b figforth.asm forth.com forth.lst
 ```
 
 The resulting `forth.com` executable can be run in CP/M. For example<sup>4</sup>:
 ```
 A>FORTH
 
-No file
-Z80 fig-FORTH 1.3a
+Z80 fig-FORTH 1.3b
 : CUBE ( N -> N.  CUBE A NUMBER ) 
    DUP DUP  ( NOW THERE ARE THREE COPIES ) 
    * * 
