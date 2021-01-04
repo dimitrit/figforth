@@ -1,0 +1,131 @@
+
+
+                         ADDENDA to Glossary for 
+                       8080 fig-FORTH Release 1.1
+
+
+#BUF         ---  n
+         A constant returning the number of disk buffers allocated.  For
+         the disk I-O routines to work correctly #BUF must be greater than 1.
+
+.CPU
+         Prints the processor name (i.e.8080) from ORIG+22H encoded as a 
+         32 bit, base 36 integer.
+        
+2!           nlow  nhigh  addr  ---
+         32 bit store.  nhigh is stored at addr; nlow is stored at addr+2.
+        
+2@           addr  ---  nlow  nhigh
+         32 bit fetch.  nhigh is fetched from addr;  nlow is fetched from
+         addr+2.
+        
+2DUP         n2  n1  ---  n2  n1  n2  n1
+         Duplicates the top two values on the stack.  Equivalent to OVER OVER.
+        
+C/L          ---  n
+         Constant leaving the number of characters per line; used by the
+         editor.
+        
+DENSITY      ---  addr
+         A variable used by the disk interface.
+         0 = single density;  1 = double density.
+        
+DISK-ERROR   ---  addr
+         A variable used by the disk interface, containing the disk status
+         for the last sector read or written.  0 means no error.
+          
+DRIVE        ---  addr
+         A variable used by disk interface, containing the disk drive
+         number (0 to MXDRV) used on the last sector read or written.
+         
+FLUSH         
+         Write all UPDATEd disk buffers to disk.  Should be used after
+         editing, before dismounting a disk, or before exiting FORTH.
+         
+NOOP         
+         A Forth ‘no operation’.
+         
+P!           b  port#  ---
+         8080 or Z-80 I-0 port store.  Outputs byte b to port#.
+
+P@           port#  ---  b
+         8080 or Z-80 I-O port fetch.  Inputs byte b from port#.
+         
+RP@          ---  addr
+         Leaves the current value in the return stack pointer register.
+         
+SEC          ---  addr
+         A variable used by the disk interface, containing the sector number
+         last read or written relative to the last drive used.
+         
+
+
+FORTH  INTEREST  GROUP  ----- P.O.  Box  1105  -----  San Carlos,  Ca.  94070
+
+
+
+
+
+SEC-READ
+         Reads a disc sector (BPS bytes) into memory.  All parameters must
+         have been set by SET-DRIVE and SET-I0.  The status on completion
+         is stored in DISK-ERROR.
+         
+SEC-WRITE
+         Writes a disk-sector (BPS bytes) from memory.  All parameters must
+         have been set by SET-DRIVE and SET-I0.  The status on completion
+         is stored in DISK-ERROR.
+         
+SET-DRIVE
+         A CP/M service call which makes subsequent disk reads and writes use
+         
+         the drive designated in DRIVE.  T&SCALC is usually used to set
+         DRIVE and call SET-DRIVE.  0 = first drive to MXDRV
+         
+SET-I0
+         A CP/M service call which makes subsequent disc reads and writes
+         use the drive last set by SET-DRIVE, the memory address in variable
+         USE, the sector number in SEC, and the track number in TRACK.
+         T&SCALC  is usually used to set these variables.
+         
+T&SCALC      n  ---
+         Track & Sector and drive calculation for disk I0.  n is the
+         total sector dispacement from the first logical drive to the
+         desired sector.
+                n  =  (block# + OFFSET) * SEC/BLK
+         The corresponding drive, track, and sector numbers are calculated.
+         If the drive number is different from the contents of DRIVE, the new
+         drive number is stored in DRIVE and SET-DRIVE is executed.
+         
+         The track number is stored in TRACK; the sector number is stored
+         in SEC.  T&SCALC is usually executed before SET-DRIVE.
+         
+TRACK        ---  addr
+         A variable used by disk I-O.  Contains the track number last
+         read or written relative to the current drive.
+         
+U<           u1  u2  ---  f
+         Leave the boolean value of an unsigned less-than comparison.  Leaves
+         f = 1 for  ul < u2; otherwise leaves 0.  This function must be
+         used when comparing memory addresses.  u1 and u2 are unsigned
+         16 bit integers.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+FORTH  INTEREST  GROUP  ----- P.O.  Box  1105  -----  San Carlos,  Ca.  94070
+
+
