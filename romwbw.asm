@@ -14,6 +14,7 @@ RTCGETTIM	.EQU	20H	; RTC get time
 RTCSETTIM	.EQU	21H	; RTC set time
 ;
 VDARES		.EQU	42H	; video reset
+VDASCP		.EQU	45H	; video set cursor position
 ;
 CURCON		.EQU	80H	; 'current console' unit number
 ;
@@ -36,7 +37,7 @@ KEYQ:	.WORD	$+2
 	POP	BC
 	LD	HL,0
 	JHPUSH
-KEYQ1	LD	C,CURCONSN
+KEYQ1:	LD	C,CURCON
 	LD	B,CIOIN
 	HBIOS
 	POP	BC
@@ -66,13 +67,11 @@ TIME:	.WORD	$+2
 	.BYTE	'E'+$80		; 6 byte date/time buffer, YMDHMS. Each byte is
 	.WORD	TIME-7		; BCD encoded.
 STIME:	.WORD	$+2
-	EXX
 	POP	HL
 	PUSH	BC
 	LD	B,RTCSETTIM
 	HBIOS
 	POP	BC
-	EXX
 	JNEXT
 ;
 	.BYTE	83H		; CLS ( -- )
@@ -80,18 +79,50 @@ STIME:	.WORD	$+2
 	.BYTE	'S'+$80
 	.WORD	STIME-8
 CLS:	.WORD	$+2
-	EXX
 	PUSH	BC
 	LD	HL,(ORIG+26H)
 	LD	C,L
 	LD	B,VDARES
 	HBIOS
 	POP	BC
-	EXX
 	JNEXT		
+;
+	.BYTE	82H		; AT ( col row -- )
+	.BYTE	'A'		; Positions the text cursor at the given position.
+	.BYTE	'T'+$80		; Both column and row positions are zero indexed,
+	.WORD	CLS-6		; i.e. 0 0 AT will move the cursor to the top left.
+SETPOS:	.WORD	$+2		; Note that AT does *not* update OUT.
+	POP	HL
+	POP	DE
+	PUSH	BC
+	LD	D,L
+	LD	HL,(ORIG+26H)
+	LD	C,L
+	LD	B,VDASCP
+	HBIOS
+	POP	BC
+	JNEXT
 ;
 ;	ROMWBW HIGH LEVEL ROUTINES
 ;
-
+	.BYTE	82H		; .B ( n -- )
+	.BYTE	'.'		; Print a BCD value, converted to decimal. No
+	.BYTE	'B'+$80		; following blank is printed.
+	.WORD	SETPOS-5
+BCD:	.WORD	DOCOL
+	.WORD	DUP
+	.WORD	TWOSLA	
+	.WORD	TWOSLA	
+	.WORD	TWOSLA	
+	.WORD	TWOSLA	
+	.WORD	LIT,30H
+	.WORD	PLUS
+	.WORD	EMIT
+	.WORD	LIT,0FH
+	.WORD	ANDD
+	.WORD	LIT,30H
+	.WORD	PLUS
+	.WORD	EMIT
+	.WORD	SEMIS
 ;
 ;

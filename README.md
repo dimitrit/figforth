@@ -38,16 +38,24 @@ A constant containing the three character file type used by `FILE`.
 Defaults to **.FTH**.
 
 ## RomWBW extensions
-Support for RomWBW HBIOS functions is included when fig-FORTH is built 
-with the `-DROMWBW` flag:
+Support for RomWBW HBIOS features<sup>5</sup> is included when fig-FORTH 
+is built with the `-DROMWBW` flag:
+
+`.B`&nbsp;&nbsp;&nbsp;&nbsp;` n -- `   
+Print a BCD value, converted to decimal. No following blank is printed.
+
+`AT`&nbsp;&nbsp;&nbsp;&nbsp;` col row --- `   
+Position the text cursor at the given position. Both column and 
+row positions are zero indexed, thus `0 0 AT` will move the cursor
+to the top left. Note that `AT` does *not* update `OUT`.
 
 `CLS`&nbsp;&nbsp;&nbsp;&nbsp;` --- `   
 Clear VDU screen.
 
 `KEY?`&nbsp;&nbsp;&nbsp;&nbsp;` --- c t ¦ f `   
 Check if a key has been pressed. Returns false if no key has been
-pressed. If a key has been pressed, returns true and the key's ascii
-code. 
+pressed. Returns true and the key's ascii code if a key has been
+pressed. 
 
 `STIME`&nbsp;&nbsp;&nbsp;&nbsp;` addr --- `   
 Set the RTC time. addr is the address of the 6 byte date/time buffer, 
@@ -58,7 +66,7 @@ Get the RTC time and leave the address of the 6 byte date/time buffer,
 YMDHMS. Each byte is BCD encoded.
 
 ## fig-FORTH Editor
-The fig-FORTH EDITOR<sup>5</sup> is included in the `SCREENS.FTH` file:
+The fig-FORTH EDITOR<sup>6</sup> is included in the `SCREENS.FTH` file:
 ```
 FILE SCREENS ↵ ok
 7 12 INDEX ↵
@@ -124,4 +132,5 @@ easy to create illegal instructions, resulting in systems hangs or crashes.
 2. William Ragsdale, _'fig-FORTH INSTALLATION MANUAL'_ (San Carlos, CA: FORTH INTEREST GROUP, 1980)
 3. Thomas Anderson, _The Telemark Assembler (TASM) User's Manual (1998)_, Vintagecomputer <http://www.vintagecomputer.net/software/TASM/TASMMAN.HTM> [Accessed 14 December 2020]
 4. John James, _‘What Is Forth? A Tutorial Introduction’_, in BYTE, 5.8 (1980), 100–26
-5. Bill Stoddart, _'EDITOR USER MANUAL'_, (London, UK: FIG United Kingdom, ND)
+5. Wayne Warthen, _RomWBW Architecture_, (RetroBrew Computers Group, 2020)   
+6. Bill Stoddart, _'EDITOR USER MANUAL'_, (London, UK: FIG United Kingdom, ND)
