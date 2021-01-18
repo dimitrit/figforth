@@ -12,7 +12,7 @@ The resulting `forth.com` executable can be run in CP/M. For example<sup>4</sup>
 ```
 A>FORTH ↵
 
-Z80 fig-FORTH 1.3b
+Z80 fig-FORTH 1.3c
 : CUBE ( N -> N.  CUBE A NUMBER ) ↵
    DUP DUP  ( NOW THERE ARE THREE COPIES ) ↵
    * * ↵
@@ -25,48 +25,130 @@ A>
 ```
 
 ## Custom Words
-This fig-FORTH implementation includes the following custom words:
+This fig-FORTH implementation includes the following custom words<sup>5</sup>:
 
-`FILE cccc`   
+`(OF)`&nbsp;&nbsp;&nbsp;&nbsp;` n1 n2 --- n1 ` _(if no match)_   
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;` n1 n2 --- ` _(if there is a match)_  
+<ul>
+The run-time procedure compiled by `OF`. See the description of the 
+run-time behaviour of `OF`.
+</ul>
+
+`CASE`&nbsp;&nbsp;&nbsp;&nbsp;` --- addr n ` _(compiling)_   
+<ul>
+Used in a colon definition in the form: `CASE...OF...ENDOF...ENDCASE`.
+Note that `OF ... ENDOF` pairs may be repeated as necessary.
+
+At compile time `CASE` saves the current value of `CSP` and resets
+it to the current position of the stack. This information is used
+by `ENDCASE` to resolve forward references left on the stack by any
+`ENDOF`s which precede it. `n` is left for compiler error checking.
+
+`CASE` has no run-time effects.
+</ul>
+
+`ENDCASE`&nbsp;&nbsp;&nbsp;&nbsp;` addr1...addrn n --- ` _(compiling)_   
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;` n --- ` _(if no match)_   
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;` --- ` _(if a match was found)_   
+<ul>
+Used in a colon definition in the form: `CASE...OF...ENDOF...ENDCASE`.
+Note that `OF ... ENDOF` pairs may be repeated as necessary.
+
+At run-time, `ENDCASE` drops the select value if it does not equal any
+case values.  `ENDCASE` then serves as the destination of forward
+branches from all previous `ENDOF`s.
+
+At compile-time. `ENDCASE` compiles a `DROP` then computes forward 
+branch offsets until all addresses left by previous `ENDOF`s have been
+resolved. Finally, the value of `CSP` saved by `CASE` is restored. `n`
+is used for error checking.
+</ul>
+
+`ENDOF`&nbsp;&nbsp;&nbsp;&nbsp;` addr1 n1 --- addr2  n2 ` _(compiling)_   
+<ul>
+Used in a colon definition in the form: `CASE...OF...ENDOF...ENDCASE`.
+Note that `OF ... ENDOF` pairs may be repeated as necessary.
+
+At run-time, `ENDOF` transfers control to the code following the next
+`ENDCASE` provided there was a match at the last `OF`. If the was no
+match at the last `OF`, `ENDOF` is the location to which execution
+will branch.
+
+At compile-time `ENDOF` emplaces `BRANCH` reserving a branch offset,
+leaves the address `addr2` and `n2` for error checking. `ENDOF` also
+resolves the pending forward branch from `OF` by calculating the offset
+from `addr1` to `HERE` and storing it at `addr1`.
+</ul>
+
+`FILE`&nbsp;&nbsp;&nbsp;&nbsp;` cccc `   
+<ul>
 Close the current .FTH file, and opens the given file. Note that a 
 file can be loaded automatically on startup by specifying its name on 
 the command line, e.g. `FORTH SCREENS.FTH`. Startup will be aborted 
 with a `No File` error message if the file cannot be opened.
+</ul>
 
 `FTYPE`&nbsp;&nbsp;&nbsp;&nbsp;` --- addr `   
+<ul>
 A constant containing the three character file type used by `FILE`.   
 Defaults to **.FTH**.
+</ul>
+
+`OF`&nbsp;&nbsp;&nbsp;&nbsp;` --- addr  n ` _(compiling)_   
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;` n1 n2 --- n1 ` _(if no match)_   
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;` n1 n2 --- ` _(if there is a match)_   
+<ul>
+Used in a colon definition in the form: `CASE...OF...ENDOF...ENDCASE`.
+Note that `OF ... ENDOF` pairs may be repeated as necessary.
+
+At run-time, `OF` checks `n1` and `n2` for equality. If equal, `n1` and `n2`
+are both dropped from the stack, and execution continues to the next `ENDOF`.
+If not equal, only `n2` is dropped, and execution jumps to whatever follows
+the next `ENDOF`.
+</ul>
 
 ## RomWBW extensions
-Support for RomWBW HBIOS features<sup>5</sup> is included when fig-FORTH 
+Support for RomWBW HBIOS features<sup>6</sup> is included when fig-FORTH 
 is built with the `-DROMWBW` flag:
 
 `.B`&nbsp;&nbsp;&nbsp;&nbsp;` n -- `   
+<ul>
 Print a BCD value, converted to decimal. No following blank is printed.
+</ul>
 
 `AT`&nbsp;&nbsp;&nbsp;&nbsp;` col row --- `   
+<ul>
 Position the text cursor at the given position. Both column and 
 row positions are zero indexed, thus `0 0 AT` will move the cursor
 to the top left. Note that `AT` does *not* update `OUT`.
+</ul>
 
 `CLS`&nbsp;&nbsp;&nbsp;&nbsp;` --- `   
+<ul>
 Clear VDU screen.
+</ul>
 
 `KEY?`&nbsp;&nbsp;&nbsp;&nbsp;` --- c t ¦ f `   
+<ul>
 Check if a key has been pressed. Returns false if no key has been
 pressed. Returns true and the key's ascii code if a key has been
 pressed. 
+</ul>
 
 `STIME`&nbsp;&nbsp;&nbsp;&nbsp;` addr --- `   
+<ul>
 Set the RTC time. addr is the address of the 6 byte date/time buffer, 
 YMDHMS. Each byte is BCD encoded.
+</ul>
 
 `TIME`&nbsp;&nbsp;&nbsp;&nbsp;` --- addr `   
+<ul>
 Get the RTC time and leave the address of the 6 byte date/time buffer, 
 YMDHMS. Each byte is BCD encoded.
+</ul>
 
 ## fig-FORTH Editor
-The fig-FORTH EDITOR<sup>6</sup> is included in the `SCREENS.FTH` file:
+The fig-FORTH EDITOR<sup>7</sup> is included in the `SCREENS.FTH` file:
 ```
 FILE SCREENS ↵ ok
 7 12 INDEX ↵
@@ -132,5 +214,6 @@ easy to create illegal instructions, resulting in systems hangs or crashes.
 2. William Ragsdale, _'fig-FORTH INSTALLATION MANUAL'_ (San Carlos, CA: FORTH INTEREST GROUP, 1980)
 3. Thomas Anderson, _The Telemark Assembler (TASM) User's Manual (1998)_, Vintagecomputer <http://www.vintagecomputer.net/software/TASM/TASMMAN.HTM> [Accessed 14 December 2020]
 4. John James, _‘What Is Forth? A Tutorial Introduction’_, in BYTE, 5.8 (1980), 100–26
-5. Wayne Warthen, _RomWBW Architecture_, (RetroBrew Computers Group, 2020)   
-6. Bill Stoddart, _'EDITOR USER MANUAL'_, (London, UK: FIG United Kingdom, ND)
+5. Charles Eaker, _'JUST IN CASE'_  in FORTH DIMENSIONS, II/3 (1980), 37-40
+6. Wayne Warthen, _RomWBW Architecture_, (RetroBrew Computers Group, 2020)   
+7. Bill Stoddart, _'EDITOR USER MANUAL'_, (London, UK: FIG United Kingdom, ND)

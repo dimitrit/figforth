@@ -53,12 +53,14 @@
 ; Upgraded to v1.3 by Dimitri Theulings - 11/2020 - changes marked 1.3
 ; Changes are based on '8080 FIG-FORTH 1.3 VERSION 0 18JUL81'
 ; ----------------------------------------------------------------------
+; Added CASE statement as proposed by Charles Eaker, FD II/3, 37-40 - DT
+; ----------------------------------------------------------------------
 ;
 ;	Release & Version numbers
 ;
 FIGREL	.EQU	1		;FIG RELEASE #
 FIGREV	.EQU	3		;FIG REVISION #
-USRVER	.EQU	62H		;USER VERSION # DT
+USRVER	.EQU	63H		;USER VERSION # DT - 2021/01/17
 ;
 ;Console & printer drivers are in external source named
 ;CONPRTIO.FTH & disc drivers in DISCIO.FTH. It has 4 screen
@@ -1638,7 +1640,7 @@ GREAT2:	JHPUSH
 	.BYTE	'0'
 	.BYTE	'>'+$80
 	.WORD	GREAT-4
-ZGREA	.WORD	DOCOL
+ZGREA:	.WORD	DOCOL
 	.WORD	ZERO,GREAT
 	.WORD	SEMIS
 ;
@@ -3447,10 +3449,103 @@ WHILE:	.WORD	DOCOL
 	.WORD	TWOP
 	.WORD	SEMIS
 ;
+	.BYTE	0C4H		;CASE
+	.TEXT	"CAS"
+	.BYTE	'E'+$80
+	.WORD	WHILE-8
+CASE:	.WORD	DOCOL
+	.WORD	QCOMP
+	.WORD	CSPP
+	.WORD	AT
+	.WORD	SCSP
+	.WORD	LIT
+	.WORD	4
+	.WORD	SEMIS
+;
+	.BYTE	0C4H		;(OF)
+	.TEXT	"(OF"
+	.BYTE	')'+$80
+	.WORD	CASE-7
+POF:	.WORD	$+2
+	POP	HL 
+	POP	DE
+	OR	A
+	SBC	HL,DE 
+	LD	A,L 		
+	OR	H
+ 	JP	NZ,POF1	
+	INC	BC
+	INC	BC
+	JP	(IX)
+POF1:	PUSH	DE
+	JP 	BRAN1
+;
+	.BYTE	0C2H		;OF
+	.BYTE	'O'
+	.BYTE	'F'+$80	
+	.WORD	POF-7
+OFF:	.WORD	DOCOL
+	.WORD	LIT
+	.WORD	04H
+	.WORD	QPAIR
+	.WORD	COMP
+	.WORD	POF
+	.WORD	HERE
+	.WORD	ZERO
+	.WORD	COMMA
+	.WORD	LIT
+	.WORD	5
+	.WORD	SEMIS
+;
+	.BYTE	0C5H		;ENDOF
+	.TEXT	"ENDO"
+	.BYTE	'F'+$80
+	.WORD	OFF-5
+ENDOF:	.WORD	DOCOL
+	.WORD	LIT
+	.WORD	5
+	.WORD	QPAIR
+	.WORD	COMP
+	.WORD	BRAN
+	.WORD	HERE
+	.WORD	ZERO
+	.WORD	COMMA
+	.WORD	SWAP
+	.WORD	TWO
+	.WORD	THEN
+	.WORD	LIT
+	.WORD	4
+	.WORD	SEMIS
+;
+	.BYTE	0C7H		;ENDCASE
+	.TEXT	"ENDCAS"
+	.BYTE	'E'+$80
+	.WORD	ENDOF-8
+ECASE:	.WORD	DOCOL
+	.WORD	LIT
+	.WORD	4
+	.WORD	QPAIR
+	.WORD	COMP
+	.WORD	DROP
+ECAS1:	.WORD	SPAT
+	.WORD	CSPP
+	.WORD	AT
+	.WORD	EQUAL
+	.WORD	ZEQU
+	.WORD	ZBRAN
+	.WORD	ECAS2-$
+	.WORD	TWO
+	.WORD	THEN
+	.WORD	BRAN
+	.WORD	ECAS1-$
+ECAS2:	.WORD	CSPP
+	.WORD	STORE
+	.WORD	SEMIS
+;
 	.BYTE	86H		;SPACES
 	.TEXT	"SPACE"
 	.BYTE	'S'+$80
-	.WORD	WHILE-8
+	.WORD	ECASE-10
 SPACS:	.WORD	DOCOL
 	.WORD	ZERO
 	.WORD	MAX
