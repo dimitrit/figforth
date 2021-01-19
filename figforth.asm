@@ -1005,7 +1005,7 @@ TDUP:	.WORD	$+2
 	PUSH	HL
 	JP	DPUSH
 ;
-	.BYTE	85H	; 2DROP		1.3
+	.BYTE	85H		; 2DROP		1.3
 	.TEXT	"2DRO"
 	.BYTE	'P'+$80
 	.WORD	TDUP-7
@@ -1014,13 +1014,56 @@ TDROP	.WORD	$+2
 	POP	HL
 	JNEXT
 ;
-; TODO: 2SWAP
-; TODO: 2OVER
+	.BYTE	85H		; 2SWAP		1.3
+	.TEXT	"2SWA"
+	.BYTE	'P'+80H
+	.WORD	TDROP-8
+TSWAP	.WORD	$+2		; NOTE: THIS WON'T WORK WITH INTERRUPTS
+	POP	HL		; (HL) <- (S1)
+	POP	DE		; (DE) <- (S2)
+	EX	(SP),HL		; (HL) <- (S3)
+;				; (S3) <- (HL)
+	EX	DE,HL		; (DE) <- (HL)
+;				; (HL) <- (DE)
+	INC	SP
+	INC	SP
+	EX	(SP),HL		; (HL) <- (S4)
+;				; (S4) <- (HL)
+	DEC	SP
+	DEC	SP
+	EX	DE,HL		; (DE) <- (HL)
+;				; (HL) <- (DE)
+	JP	DPUSH		; (S1) <- (HL)
+;				; (S2) <- (DE)
+;
+	.BYTE	85H		; 2OVER		1.3
+	.DB	"2OVE"
+	.BYTE	'R'+80H
+	.WORD	TSWAP-8
+TOVER	.BYTE	$+2		; NOTE: THIS WON'T WORK WITH INTERRUPTS
+	INC	SP
+	INC	SP
+	INC	SP
+	INC	SP
+	POP	HL		; (HL) <- (S3)
+	PUSH	HL
+	INC	SP
+	INC	SP
+	POP	DE		; (DE) <- (S4)
+	PUSH	DE
+	DEC	SP
+	DEC	SP
+	DEC	SP
+	DEC	SP
+	DEC	SP
+	DEC	SP
+	JP	DPUSH		; (S1) <- (HL)
+;				; (S2) <- (DE)
 ;
 	.BYTE	82H		;+!
 	.BYTE	'+'
 	.BYTE	'!'+$80
-	.WORD	TDROP-8
+	.WORD	TOVER-8
 PSTOR:	.WORD	$+2
 	POP	HL		;(HL)<--VAR ADDR
 	POP	DE		;(DE)<--NUMBER
