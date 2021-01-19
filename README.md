@@ -8,7 +8,9 @@ A fig-FORTH<sup>2</sup> implementation for the Z80 that can be built using TASM<
 $ tasm -80 -b figforth.asm forth.com forth.lst
 ```
 
-The resulting `forth.com` executable can be run in CP/M. For example<sup>4</sup>:
+Alternatively, non-Windows users can use the `uz80as`<sup>4</sup> Z80 compiler.
+
+The resulting `forth.com` executable can be run in CP/M. For example<sup>5</sup>:
 ```
 A>FORTH ↵
 
@@ -25,7 +27,7 @@ A>
 ```
 
 ## Custom Words
-This fig-FORTH implementation includes the following custom words<sup>5</sup>:
+This fig-FORTH implementation includes the following custom words<sup>6</sup>:
 
 `(OF)`&nbsp;&nbsp;&nbsp;&nbsp;` n1 n2 --- n1 ` _(if no match)_   
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;` n1 n2 --- ` _(if there is a match)_  
@@ -108,7 +110,7 @@ the next `ENDOF`.
 </ul>
 
 ## RomWBW extensions
-Support for RomWBW HBIOS features<sup>6</sup> is included when fig-FORTH 
+Support for RomWBW HBIOS features<sup>7</sup> is included when fig-FORTH 
 is built with the `-DROMWBW` flag:
 
 `.B`&nbsp;&nbsp;&nbsp;&nbsp;` n -- `   
@@ -148,7 +150,7 @@ YMDHMS. Each byte is BCD encoded.
 </ul>
 
 ## fig-FORTH Editor
-The fig-FORTH EDITOR<sup>7</sup> is included in the `SCREENS.FTH` file:
+The fig-FORTH EDITOR<sup>8</sup> is included in the `SCREENS.FTH` file:
 ```
 FILE SCREENS ↵ ok
 7 12 INDEX ↵
@@ -213,7 +215,8 @@ easy to create illegal instructions, resulting in systems hangs or crashes.
 1. C. H. Ting, _Systems Guide to figForth_, 3rd Edn (San Mateo, CA: Offete Enterprises, 2013), p. vi
 2. William Ragsdale, _'fig-FORTH INSTALLATION MANUAL'_ (San Carlos, CA: FORTH INTEREST GROUP, 1980)
 3. Thomas Anderson, _The Telemark Assembler (TASM) User's Manual (1998)_, Vintagecomputer <http://www.vintagecomputer.net/software/TASM/TASMMAN.HTM> [Accessed 14 December 2020]
-4. John James, _‘What Is Forth? A Tutorial Introduction’_, in BYTE, 5.8 (1980), 100–26
-5. Charles Eaker, _'JUST IN CASE'_  in FORTH DIMENSIONS, II/3 (1980), 37-40
-6. Wayne Warthen, _RomWBW Architecture_, (RetroBrew Computers Group, 2020)   
-7. Bill Stoddart, _'EDITOR USER MANUAL'_, (London, UK: FIG United Kingdom, ND)
+4. Jorge Giner, _uz80as - Micro Z80 Assembler_, Github <https://github.com/jorgicor/uz80as> [Accessed 19 January 2021]
+5. John James, _‘What Is Forth? A Tutorial Introduction’_, in BYTE, 5.8 (1980), 100–26
+6. Charles Eaker, _'JUST IN CASE'_  in FORTH DIMENSIONS, II/3 (1980), 37-40
+7. Wayne Warthen, _RomWBW Architecture_, (RetroBrew Computers Group, 2020)   
+8. Bill Stoddart, _'EDITOR USER MANUAL'_, (London, UK: FIG United Kingdom, ND)
