@@ -316,6 +316,10 @@ FILE:	.WORD	DOCOL			; The file type is determined by FTYPE.
 	.WORD	BDOS
 	.WORD	DROP
 	.WORD	MTBUF			; clear buffer
+	.WORD	FCB			; clear FCB
+	.WORD	LIT,10H
+	.WORD	ZERO
+	.WORD	FILL			
 	.WORD	BL,WORD			; get filename
 	.WORD	HERE
 	.WORD	COUNT
@@ -325,7 +329,7 @@ FILE:	.WORD	DOCOL			; The file type is determined by FTYPE.
 	.WORD	ONEP
 	.WORD	DUP
 	.WORD	LIT,MAXLEN
-	.WORD	BLANK			; clear previous name from fcb
+	.WORD	BLANK			; blank filename in fcb
 	.WORD	FTYPE
 	.WORD	OVER
 	.WORD	LIT,MAXLEN
