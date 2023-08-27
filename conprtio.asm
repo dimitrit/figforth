@@ -51,8 +51,11 @@ CINLP:	CALL	SYSENT		;(A)<--CHR (or 0 if nothing typed)
 	OR	A
 	JR	Z,CINLP		;wait for CHR to be typed
 	CP	RUBOUT
-	JR	NZ,CIN1
+	JR	NZ,CIN0
 	LD	A,BSOUT		;convert RUB to ^H
+CIN0:	CP	HT
+	JR	NZ,CIN1
+	LD	A,ABL		;convert HT to space
 CIN1:	RES	7,A		;(MSB)<--0
 	POP	BC
 	RET

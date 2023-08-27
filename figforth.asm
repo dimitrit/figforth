@@ -74,6 +74,7 @@ ADOT	.EQU	2EH		;.
 BELL	.EQU	07H		;^G
 BSIN	.EQU	08H		;backspace chr = ^H
 BSOUT	.EQU	08H
+HT	.EQU	09H		;^T 
 DLE	.EQU	10H		;^P
 LF	.EQU	0AH		;^J
 FF	.EQU	0CH		;^L
