@@ -1,3 +1,6 @@
+*.gz
+*.aux
+*.log
 *.rom
 *.com
 *.bin
