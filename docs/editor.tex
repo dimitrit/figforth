@@ -1,0 +1,152 @@
+\documentclass{article}
+\usepackage[letterpaper, total={6in, 8in}]{geometry}
+\usepackage{multicol}
+\usepackage{enumitem}
+\title{EDITOR USER MANUAL}
+\author{Bill Stoddart\\of FIG, United Kingdom}
+\date{} % Nov 1984?
+
+\newcommand{\n}{\textit{n}}
+\setlist[description]{%
+	align=left,
+	leftmargin=2.5em,
+	labelwidth=2em,
+	font={\bfseries\ttfamily},
+}
+\begin{document}
+\maketitle
+%\tableofcontents
+\begin{multicols}{2}[]
+	\setlength{\parskip}{.5em}
+	\setlength\parindent{0pt}
+	\section{Introduction}
+	FORTH organizes its mass storage into ``screens'' of 1024 characters.
+	If, for example, a diskette of 250k byte capacity is used entirely
+	for storing text, it will appear to the user as 250 screens
+	numbered 0 to 249.
+
+	Each screen is organized as 16 lines with 64 characters per line.
+	The FORTH screens are merely an arrangement of virtual memory and
+	need not correspond exactly with the screen format of a particular
+	terminal.
+
+	\section{Selecting a Screen and Input of Text}
+
+	To start an editing session the user types \verb|EDITOR| to invoke the
+	appropriate vocabulary.
+
+	The screen to be edited is then selected, using either:
+	\begin{description}
+	\item[n LIST]
+		list screen \n{} and select it for editing, \textit{or}
+	\item[n CLEAR]
+		clear screen \n{} and select for editing.
+	\end{description}
+
+	To input new text to screen \n{} after \verb|LIST| or \verb|CLEAR|
+	the \verb|P| (put) command is used.
+
+	Example:
+	\begin{verbatim}
+	O P THIS IS HOW
+	1 P TO INPUT TEXT
+	2 P TO LINES O, 1, AND 2 OF THE SCREEN.
+	\end{verbatim}
+
+	\section{Line Editing}
+
+	During this description of the editor, reference is made to \verb|PAD|.
+	This is a text buffer which may hold a line of text used by or
+	saved with a line editing command, or a text string to be found or
+	deleted by a string editing command.
+
+	\verb|PAD| can be used to transfer a line from one screen to another,
+	as well as to perform edit operations within a single screen.
+
+	\subsection{Line Editor Commands}
+	\begin{description}
+		\item[n H]
+			Hold line \n{} at \verb|PAD|
+			(used by system more often than by user).
+		\item[n D]
+			Delete line \n{} but hold it in \verb|PAD|.
+			Line 15 becomes blank as lines \n{}+1 to 15 move up 1 line.
+		\item[n T]
+			Type line \n{} and save it in \verb|PAD|.
+		\item[n R]
+			Replace line \n{} with the text in \verb|PAD|.
+		\item[n I]
+			Insert the text from \verb|PAD| at line \n{},
+			moving the old line \n{} and following lines down.
+			Line 15 is lost.
+		\item[n E]
+			Erase line \n{} with blanks.
+		\item[n S]
+			Spread at line \n{}. \n{} and subsequent lines
+			move down 1 line. Line \n{} becomes blank.
+			Line 15 is lost.
+	\end{description}
+
+	\section{Cursor Control and String Editing}
+
+	The screen of text being edited resides in a buffer area of
+	storage. The editing cursor is a variable holding an offset into
+	this buffer area. Commands are provided for the user to position
+	the cursor, either directly or by searching for a string of buffer
+	text, and to insert or delete text at the cursor position.
+
+	\subsection{Commands to Position the Cursor}
+	\begin{description}
+		\item[TOP]
+			Position the cursor at the start of the screen.
+		\item[n M]
+			Move the cursor by a signed amount \n{} and
+			print the cursor line. The position of the cursor on
+			its line is shown by a \verb|_| (underline).
+	\end{description}
+
+	\subsection{String Editing Commands}
+	\begin{description}
+		\item[F text]
+			Search forward from the current cursor position
+			until string `\textit{text}' is found. The cursor is left at
+			the end of the text string, and the cursor line is printed.
+			If the string is not found an error message is given
+			and the cursor is repositioned at the top of screen.
+		\item[B]
+			Used after \verb|F| to back up the cursor by the length
+			of the most recent text.
+		\item[N]
+			Find the next occurrence of the string found by an
+			\verb|F| command.
+		\item[X text]
+			Find and delete the string `\textit{text}'.
+		\item[C text]
+			Copy in text to the cursor line at the cursor position
+		\item[TILL text]
+			Delete on the cursor line from the cursor till the
+			end of the text string `\textit{text}'.
+	\end{description}
+	\textbf{NOTE:} Typing \verb|C| with no text will copy a \verb|NULL| character
+	into the text at the cursor position. This will abruptly stop subsequent
+	compilation! To delete this error type \verb|TOP X| `return'.
+
+	\subsection{Screen Editing Commands}
+	\begin{description}
+		\item[n LIST]
+			List screen \n{} and select it for editing
+		\item[n CLEAR]
+			Clear screen \n{} with blanks and select it for editing
+		\item[n1 n2 COPY]
+			Copy screen \textit{n1} to screen \textit{n2}.
+		\item[L]
+			List the current screen. The cursor line is relisted
+			after the screen listing, to show the cursor position.
+		\item[FLUSH]
+			Used at the end of an editing session to ensure that
+			all entries and updates of text have been transferred
+			to disk.
+	\end{description}
+\end{multicols}
+\textbf{}
+\end{document}
