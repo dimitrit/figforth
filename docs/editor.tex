@@ -1,11 +1,10 @@
 \documentclass{article}
-\usepackage[letterpaper, total={6in, 8in}]{geometry}
+\usepackage[letterpaper, total={7.5in, 9in}]{geometry}
 \usepackage{multicol}
 \usepackage{enumitem}
 \title{EDITOR USER MANUAL}
-\author{Bill Stoddart\\of FIG, United Kingdom}
+\author{Bill Stoddart\\of FIG, United Kingdom} % Formatted in LaTEX by DT 20230828
 \date{} % Nov 1984?
-
 \newcommand{\n}{\textit{n}}
 \setlist[description]{%
 	align=left,
@@ -16,7 +15,7 @@
 \begin{document}
 \maketitle
 %\tableofcontents
-\begin{multicols}{2}[]
+\begin{multicols*}{2}[]
 	\setlength{\parskip}{.5em}
 	\setlength\parindent{0pt}
 	\section{Introduction}
@@ -37,10 +36,10 @@
 
 	The screen to be edited is then selected, using either:
 	\begin{description}
-	\item[n LIST]
-		list screen \n{} and select it for editing, \textit{or}
-	\item[n CLEAR]
-		clear screen \n{} and select for editing.
+		\item[n LIST]
+			list screen \n{} and select it for editing, \textit{or}
+		\item[n CLEAR]
+			clear screen \n{} and select for editing.
 	\end{description}
 
 	To input new text to screen \n{} after \verb|LIST| or \verb|CLEAR|
@@ -50,7 +49,7 @@
 	\begin{verbatim}
 	O P THIS IS HOW
 	1 P TO INPUT TEXT
-	2 P TO LINES O, 1, AND 2 OF THE SCREEN.
+	2 P TO LINES O, 1, AND 2 OF THE SELECTED SCREEN.
 	\end{verbatim}
 
 	\section{Line Editing}
@@ -147,6 +146,98 @@
 			all entries and updates of text have been transferred
 			to disk.
 	\end{description}
-\end{multicols}
+
+	\section{Editor Glossary}
+	\begin{description}
+		\item[TEXT]\texttt{c ---}\\
+			Accept following text to pad. \textit{c} is text delimiter.
+		\item[LINE]\texttt{n --- addr}\\
+			Leave address of line \n{} of current screen. This address will
+			be in the disc buffer area.
+		\item[WHERE]\texttt{n1 n2 ---}\\
+			\textit{n2} is the block no., \textit{n1} is offset into block.
+			If an error is found in the source when loading from disc, the
+			recovery routine \verb|ERROR| leaves these values on the stack
+			to help the user locate the error. \verb|WHERE| uses these to
+			print the screen and line nos. and a picture of where the error
+			occurred.
+		\item[R\#]\texttt{--- addr}\\
+			A user variable which contains the offset of the editing cursor
+			from the start of the screen.
+		\item[\#LOCATE]\texttt{--- n1 n2}\\
+			From the cursor position determine the line-no \textit{n2} and
+			the offset into the line \textit{n1}.
+		\item[\#LEAD]\texttt{--- line-address offset-to-cursor}
+		\item[\#LAG]\texttt{--- cursor-address}\\\texttt{count-after-cursor-till-EOL}
+		\item[-MOVE]\texttt{addr line-no ---}\\
+			Move a line of text from \textit{addr} to \textit{line-no} of
+			current screen.
+		\item[H]\texttt{n ---}\\
+			Hold numbered line at \verb|PAD|.
+		\item[E]\texttt{n ---}\\
+			Erase line \n{} with blanks.
+		\item[S]\texttt{n ---}\\
+			Spread. Lines \n{} and following move down. \n{} becomes blank.
+		\item[D]\texttt{n ---}\\
+			Delete line \n{}, but hold in \verb|PAD|.
+		\item[M]\texttt{n ---}\\
+			Move cursor by a signed amount and print its line.
+		\item[T]\texttt{n ---}\\
+			Type line \n{} and save in \verb|PAD|.
+		\item[L]\texttt{---}\\
+			List the current screen.
+		\item[R]\texttt{n ---}\\
+			Replace line \n{} with the text in \verb|PAD|.
+		\item[P]\texttt{n ---}\\
+			Put the following text on line \n{}.
+		\item[I]\texttt{n ---}\\
+			Spread at line \n{} and insert text from \verb|PAD|.
+		\item[TOP]\texttt{---}\\
+			Position editing cursor at top of screen.
+		\item[CLEAR]\texttt{n ---}\\
+			Clear screen \n{}, can be used to select screen \n{}
+			for editing.
+		\item[FLUSH]\texttt{---}\\
+			Write all updated buffers to disk. This has been modified to
+			cope with an error in the Micropolis CP/M disk drivers.
+		\item[COPY]\texttt{n1 n2 ---}\\
+			Copy screen \textit{n1} to screen \textit{n2}.
+		\item[-TEXT]\texttt{addr1 count addr2 -- boolean}\\
+			True if strings exactly match.
+		\item[MATCH]\texttt{cursor-addr bytes-left-till-EOL str-addr str-count
+			\\---    tf cursor-advance-till-end-of-matching-text
+			\\---    ff bytes-left-till-EOL}\\
+			Match the string at \textit{str-addr} with all strings on the
+			cursor line forward from the cursor.  The arguments  left allow
+			the cursor \verb|R\#| to be updated either to the end of the
+			matching text or to the start of the next line.
+		\item[1LINE]\texttt{--- f}\\
+			Scan the cursor line for a match to \verb|PAD| text. Return
+			flag and update the cursor \verb|R\#| to the end of matching
+			text, or to the start of the next line if no match is found.
+		\item[FIND]\texttt{---}\\
+			Search for a match to the string at \verb|PAD|, from the
+			cursor position till the end of screen. If no match found
+			issue an error message and reposition the cursor at the top
+			of screen.
+		\item[DELETE]\texttt{n ---}\\
+			Delete \n{} characters prior to the cursor.
+		\item[N]\texttt{---}\\
+			Find next occurrence of \verb|PAD| text.
+		\item[F]\texttt{---}\\
+			Input following text to \verb|PAD| and search for match from
+			cursor position till end of screen.
+		\item[B]\texttt{---}\\
+			Backup cursor by text in \verb|PAD|.
+		\item[X]\texttt{---}\\
+			Delete next occurrence of following text.
+		\item[TILL]\texttt{---}\\
+			Delete on cursor line from cursor to end of the following text.
+		\item[C]\texttt{---}\\
+			Spread at cursor and copy the following text into the cursor
+			line.
+	\end{description}
+
+\end{multicols*}
 \textbf{}
 \end{document}
