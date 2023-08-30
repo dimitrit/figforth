@@ -1,0 +1,56 @@
+\documentclass{article}
+\usepackage[letterpaper, total={7.5in, 9in}]{geometry}
+\usepackage{multicol}
+\usepackage{enumitem}
+\title{RomWBW Extensions}
+\author{D Theulings}
+\date{August 2023}
+\newcommand{\n}{\textit{n}}
+\setlist[description]{%
+	align=left,
+	leftmargin=2.5em,
+	labelwidth=2em,
+	font={\bfseries\ttfamily},
+}
+\begin{document}
+\maketitle
+\begin{multicols}{2}[]
+	\setlength{\parskip}{.5em}
+	\setlength\parindent{0pt}
+
+	\section{Introduction}
+	Support for RomWBW HBIOS features\footnotemark{} is included in \verb|ROMWBW.FTH|.
+	Use \verb|ROMWBW| to invoke the	appropriate vocabulary.
+
+	\section{Glossary}
+	\begin{description}
+		\item[.B]\texttt{n --}\\
+			Print BCD value \n{}, converted to decimal. No following blank is printed.
+
+		\item[AT]\texttt{col row ---}\\
+			Position the text cursor at the given position. Both column and
+			row positions are zero indexed, thus \verb|0 0 AT| will move the
+			cursor to the top left of the screen. Note that \verb|AT| does
+			\textbf{not} update \verb|OUT|.
+
+		\item[CLS]\texttt{---}\\
+			Clear VDU screen.
+
+		\item[KEY?]\texttt{--- c t ¦ f}\\
+			Check if a key has been pressed. Returns false if no key has been
+			pressed. Returns true and the key's ascii code if a key has been
+			pressed.
+
+		\item[STIME]\texttt{addr ---}\\
+			Set the RTC time. \textit{addr} is the address of the 6 byte
+			date/time buffer \verb|YMDHMS|. Each byte in this buffer is BCD
+			encoded.
+
+		\item[TIME]\texttt{--- addr}\\
+			Get the RTC time and leave the address of the 6 byte date/time
+			buffer \verb|YMDHMS|. Each byte in this buffer is BCD encoded.
+	\end{description}
+
+	\footnotetext{Wayne Warthen, \textit{RomWBW Architecture}, (RetroBrew Computers Group, 2020), ⟨URL:\\ https://www.retrobrewcomputers.org/lib/exe/fetch.php?media=software:firmwareos:romwbw:romwbw\_architecture.pdf⟩ – visited on 2023-08-29.}
+\end{multicols}
+\end{document}

@@ -1,5 +1,5 @@
 # List of documents that need to be generated
-documents = editor.pdf 
+documents = editor.pdf nabu.pdf romwbw.pdf
 
 # You want latexmk to *always* run, because make does not have all the info.
 # Also, include non-file targets in .PHONY so they are run regardless of any

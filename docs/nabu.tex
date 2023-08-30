@@ -1,0 +1,305 @@
+\documentclass{article}
+\usepackage[letterpaper, total={7.5in, 9in}]{geometry}
+\usepackage{multicol}
+\usepackage{enumitem}
+\title{NABU Extensions}
+\author{D Theulings}
+\date{September 2023}
+\newcommand{\n}{\textit{n}}
+\setlist[description]{%
+	align=left,
+	leftmargin=2.5em,
+	labelwidth=2em,
+	font={\bfseries\ttfamily},
+}
+\begin{document}
+	\maketitle
+	\begin{multicols}{2}[]
+		\setlength{\parskip}{.5em}
+		\setlength\parindent{0pt}
+
+		\section{Introduction}
+		Support for NABU video and audio features\footnotemark{} is included
+		in \verb|NABU.FTH|. After loading the screens, use \verb|NABU| to invoke
+		the appropriate vocabulary. Refer to the NABU-HOWTO document for details 
+		on configuring and using fig-FORTH on the NABU PC.
+
+		\section{Glossary}
+		\begin{description}
+			\item[\#MOTION]\texttt{n --- }\\
+				Sets sprite numbers 0 to \textit{n} - 1 in auto motion.
+
+			\item[BEEP]\texttt{--- }\\
+				Produces the sound associated with correct input or prompting.
+
+			\item[CHAR]\texttt{n1 n2 n3 n4 char --- }\\
+				Defines character no. \textit{char} to have the pattern specified by
+				the four numbers \verb|(n1, n2, n3, n4)| on the stack. The definition
+				for character \textit{\#0} by default resides at 800h. Each character
+				definition is 8 bytes long with each number on the stack representing
+				two bytes.
+
+			\item[CHARPAT]\texttt{char --- n1 n2 n3 n4 }\\
+				Places the four number (8-byte) pattern of a specified character char
+				on the stack. By default, the definition for character \textit{\#0}
+				resides at 800h.
+
+			\item[COINC]\texttt{spr1 spr2 tol --- flag }\\
+				Detects a coincidence between two given sprites within a specified
+				tolerance limit \textit{tol}. A true flag indicates a coincidence.
+
+			\item[COINCALL]\texttt{--- flag }\\
+				Detects a coincidence between the visible portions of any two sprites
+				on the display screen. A true flag indicates a coincidence.
+
+			\item[COINCXY]\texttt{dotcol dotrow spr tol --- flag }\\
+				Detects a coincidence between a specified sprite and a given point
+				\verb|(dotcol,dotrow)| within a given tolerance limit \textit{tol}.
+				A true flag indicates a coincidence.
+
+			\item[COLOR]\texttt{n1 n2 n3 --- }\\
+				Causes a specified character set \textit{n3} to have the given
+				foreground \textit{n1} and background \textit{n2} colors.
+
+			\item[COLTAB]\texttt{--- vaddr }\\
+				A constant whose value is the beginning VDP address of the color
+				table. The default value is 380h.
+
+			\item[CURPOS]\texttt{--- addr }\\
+				A user variable that stores the current VDP cursor position.
+
+			\item[DCOLOR]\texttt{--- addr }\\
+				A variable which contains the dot-color information used by \verb|DOT|.
+				Its value may be a two-digit hexadecimal number which defines the
+				foreground and background color, or it may be -1 which means no
+				color information is changed in the VDP.
+
+			\item[DDOT]\texttt{dotcol dotrow --- b vaddr }\\
+				The assembly code routine called by \verb|DOT|. It expects a dot
+				column and a dot row on the stack and returns a byte \textit{b} with
+				only one bit set and a VDP address \textit{vaddr}. The dot referenced
+				by \verb|(dotcol,dotrow)| is translated by \verb|DDOT| to the address
+				\textit{vaddr} of the byte containing it and a mask \textit{b} that 
+				locates the dot within the byte.
+
+			\item[DELALL]\texttt{--- }\\
+				Delete all sprites.
+
+			\item[DELSPR]\texttt{spr --- }\\
+				Delete the specified sprite \textit{spr}.
+
+			\item[DMODE]\texttt{--- addr }\\
+				A variable that determines which dot mode is currently in effect.
+				A \verb|DMODE| value of 0 indicates \textit{DRAW} mode, a value of 1
+				indicates \textit{UNDRAW} mode, and a value of 2 indicates
+				\textit{DOT-TOGGLE} mode. This variable is set by the \verb|DRAW|,
+				\verb|UNDRAW| and \verb|DTOG| words.
+
+			\item[DOT]\texttt{dotcol dotrow --- }\\
+				Plots a dot at \verb|(dotcol,dotrow)| in whatever mode is selected
+				by \verb|DMODE| and in whatever color is selected by \verb|DCOLOR|.
+
+			\item[DRAW]\texttt{--- }\\
+				Sets \verb|DMODE| equal to 0. This means that dots are plotted in
+				the `on' state.
+
+			\item[DTOG]\texttt{--- }\\
+				Sets \verb|DMODE| equal to 2. This means that each dot plotted
+				takes on the opposite state of the dot currently at that location.
+
+			\item[DXY]\texttt{dotcol1 dotrow1 dotcol2 dotrow2 --- n1 n2 }\\
+				Places on the stack the square of the x distance \textit{n1} and
+				the square of the y distance \textit{n2} between the points
+				\verb|(dotcol1,dotrow1)| and \verb|(dotcol2,dotrow2)|.
+
+			\item[GCHAR]\texttt{col row --- char }\\
+				Returns on the stack the ASCII code \textit{char} of the character
+				currently at \verb|(col,row)|. Note that rows and columns are
+				numbered from 0.
+
+			\item[GOTOXY]\texttt{col row --- }\\
+				Places the cursor at the designated column \textit{col} and row
+				position \textit{row}. Note that rows and columns are numbered
+				from 0.
+
+			\item[GRAPHICS]\texttt{--- }\\
+				Converts from present display screen mode into standard Graphics mode
+				configurations.
+
+			\item[GRAPHICS2]\texttt{--- }\\
+				Converts from present Forth screen mode into standard Graphics2 mode
+				configuration.
+
+			\item[HCHAR]\texttt{col row count char --- }\\
+				Prints a horizontal stream of a specified character \textit{char}
+				beginning at \verb|(col,row)| and having a length \textit{count}.
+				Note that rows and columns are numbered from 0.
+
+			\item[HONK]\texttt{--- }\\
+				Produces the sound associated with incorrect input.
+
+			\item[JOYST]\texttt{n1 --- char n2 n3 }\\
+				Allows you to accept input from joystick \#1 and the left side of
+				the keyboard (\textit{n1 = 1}) or from joystick \#2 and the right
+				side of the keyboard (\textit{n1 = 2}). Values returned are
+				the character code \textit{char} of the key pressed, the x value
+				\textit{n2} and the y value \textit{n3}.
+
+			\item[LINE]\texttt{dotcol1 dotrow1 dotcol2 dotrow2 --- }\\
+				The high resolution graphics routine which plots a line from
+				\verb|(dotcol1,dotrow1)| to \verb|(dotcol2,dotrow2)|. \verb|DCOLOR|
+				and \verb|DMODE| must be set before this instruction is used.
+
+			\item[MAGNIFY]\texttt{n --- }\\
+				Alters the sprite magnification factor to be \textit{n}. The value
+				of \textit{n} must be 0, 1, 2 or 3.
+
+			\item[MCHAR]\texttt{n col row --- }\\
+				Places a square of color \textit{n} at \verb|(col,row)|. Used in
+				multicolor mode.
+
+			\item[MINIT]\texttt{--- }\\
+				Initializes the monitor screen for use with \verb|MCHAR|.
+
+			\item[MOTION]\texttt{n1 n2 spr --- }\\
+				Assigns a horizontal \textit{n1} and vertical \textit{n2} velocity
+				to the specified sprite \textit{spr}.
+
+			\item[MULTI]\texttt{--- }\\
+				Converts from present display screen mode into standard Multicolor
+				mode configuration.
+
+			\item[PDT]\texttt{--- vaddr }\\
+				A constant which contains the VDP address of the Pattern Descriptor
+				Table. Defaul tvalue is 800h.
+
+			\item[SATR]\texttt{--- vaddr }\\
+				A constant whose value vaddr is the VDP address of the Sprite
+				Attribute List. Default value is 300h.
+
+			\item[SCREEN]\texttt{n --- }\\
+				Changes the display screen color to the color specified \textit{n}.
+				The foreground (FG) and background (BG) screen colors must be placed
+				in the low-order byte of \textit{n}, with FG the high-order 4 bits
+				and BG the low-order 4 bits, e.g., \textit{n = 27} (1Bh) for black
+				on light yellow.
+
+			\item[SMTN]\texttt{--- vaddr }\\
+				A constant whose value is the VDP address of the Sprite Motion
+				Table. Default value is 780h.
+
+			\item[SPCHAR]\texttt{n1 n2 n3 n4 char --- }\\
+				Defines a character \textit{char} in the Sprite Descriptor Table to
+				have the pattern composed of the 4 words (cells) on the stack.
+
+			\item[SPDTAB]\texttt{--- vaddr }\\
+				A constant whose value is the VDP address of the Sprite Descriptor
+				Table. Default value is 800h. Note that this coincides with the
+				Pattern Descriptor Table.
+
+			\item[SPLIT]\texttt{--- }\\
+				Converts from present display screen mode into standard Split mode
+				configuration.
+
+			\item[SPLIT2]\texttt{--- }\\
+				Converts from present display screen mode into standard Split2 mode
+				configuration.
+
+			\item[SPRCOL]\texttt{n spr --- }\\
+				Changes color of the given sprite number \textit{spr} to the color
+				\textit{n} specified.
+
+			\item[SPRDIST]\texttt{spr1 spr2 --- n }\\
+				Returns on the stack the square of the distance \textit{n} between
+				two specified sprites, \textit{spr1} and \textit{spr2}. Distance is
+				measured in pixels and the maximum distance that can be detected
+				accurately is 181 pixels.
+
+			\item[SPRDISTXY]\texttt{dotcol dotrow spr --- n }\\
+				Places on the stack \textit{n}, the square of the distance between
+				the point \verb|(dotcol,dotrow)| and a given sprite \textit{spr}.
+				Distance is measured in pixels and the maximum distance that
+				can be detected accurately is 181 pixels.
+
+			\item[SPRGET]\texttt{spr --- dotcol dotrow }\\
+				Returns the dot column \textit{dotcol} and dot row \textit{dotrow}
+				position of sprite \textit{spr}.
+
+			\item[SPRITE]\texttt{dotcol dotrow n char spr --- }\\
+				Defines sprite number \textit{spr} to have the specified location
+				\verb|(dotcol,dotrow)|, color \textit{n}, and character pattern
+				\textit{char}. The size of the sprite will depend on the magnification
+				factor.
+
+			\item[SPRPAT]\texttt{char spr --- }\\
+				Changes the character pattern of a given sprite \textit{spr} to
+				\textit{char}.
+
+			\item[SPRPUT]\texttt{dotcol dotrow spr --- }\\
+				Places a given sprite \textit{spr} at location \verb|(dotcol,dotrow)|.
+
+
+
+			\item[SSDT]\texttt{vaddr --- }\\
+				Places the Sprite Descriptor Table at the specified VDP address
+				\textit{vaddr} and initializes all sprite tables. The address given
+				must be on an even 2K boundary. This instruction must be executed
+				before sprites can be used.
+
+			\item[SYS\$]\texttt{--- addr }\\
+				A user variable that contains the address of the system support entry point.
+
+			\item[SYSTEM]\texttt{n --- }\\
+				Calls the system synonyms. You must specify an offset \textit{n} into
+				a jump table for the routine you wish to call. The offset \textit{n}
+				must be one of the predefined even numbers. See system Forth screen 
+				\textbf{TODO} for offsets \textbf{...}.
+
+			\item[VAND]\texttt{b vaddr --- }\\
+				Performs a logical AND on the byte at the specified VDP location
+				\textit{vaddr} and the given byte \textit{b}. The result byte is
+				stored back into the VDP address.
+
+			\item[VCHAR]\texttt{col row count char --- }\\
+				Prints on the display screen a vertical stream of length \textit{count}
+				of the specified character \textit{char}. The first character of the
+				stream is located at \verb|(col,row)|. Rows and columns are numbered
+				from 0 beginning at the upper left of the display screen.
+
+			\item[VFILL]\texttt{vaddr count b --- }\\
+				Fills \textit{count} locations beginning at the given VDP address
+				\textit{vaddr} with the specified byte \textit{b}.
+
+			\item[VMBR]\texttt{vaddr addr count --- }\\
+				Reads \textit{count} bytes beginning at the given VDP address
+				\textit{vaddr} and places them at \textit{addr}.
+
+			\item[VMBW]\texttt{addr vaddr count --- }\\
+				Writes \textit{count} bytes from \textit{addr} into VDP memory
+				beginning at the given VDP address \textit{vaddr}.
+
+			\item[VOR]\texttt{b vaddr --- }\\
+				Performs a logical OR on the byte at the specified VDP address
+				\verb|vaddr| and the given byte \textit{b}. The result byte is stored
+				back into the VDP address.
+
+			\item[VSBR]\texttt{vaddr --- b }\\
+				Reads a single byte from the given VDP address \textit{vaddr} and places
+				its value \textit{b} on the stack.
+
+			\item[VSBW]\texttt{b vaddr --- }\\
+				Writes a single byte \textit{b} into the given VDP address \textit{vaddr}.
+
+			\item[VWTR]\texttt{b n --- }\\
+				Writes the given byte \textit{b} into the specified VDP write-only register
+				\textit{n}.
+
+			\item[VXOR]\texttt{b vaddr --- }\\
+				Performs a logical XOR on the byte at the specified VDP address
+				\textit{vaddr} and the given byte \textit{b}. The result byte is
+				stored back into the VDP address \textit{vaddr}.
+		\end{description}
+
+		\footnotetext{NABU Network, \textit{NABU Personal Computer Technical Specifications}, (Ottawa, ON: NABU Manufacturing Corporation, 1984), ⟨URL:\\ https://cloud.nabu.ca/docs/Nabu\_PC\_Technical\_Specifications.pdf⟩ – visited on 2023-08-29.}
+	\end{multicols}
+\end{document}
