@@ -20,7 +20,7 @@
 
 		\section{Introduction}
 		Support for NABU video and audio features\footnotemark{} is included
-		in \verb|NABU.FTH|. After loading the screens, use \verb|NABU| to invoke
+		in \verb|NABU.SCR|. After loading the screens, use \verb|NABU| to invoke
 		the appropriate vocabulary. Refer to the NABU-HOWTO document for details 
 		on configuring and using fig-FORTH on the NABU PC.
 
@@ -90,9 +90,9 @@
 
 			\item[DMODE]\texttt{--- addr }\\
 				A variable that determines which dot mode is currently in effect.
-				A \verb|DMODE| value of 0 indicates \textit{DRAW} mode, a value of 1
-				indicates \textit{UNDRAW} mode, and a value of 2 indicates
-				\textit{DOT-TOGGLE} mode. This variable is set by the \verb|DRAW|,
+				A \verb|DMODE| value of 0 indicates \textit{Draw} mode, a value of 1
+				indicates \textit{Undraw} mode, and a value of 2 indicates
+				\textit{Dot Toggle} mode. This variable is set by the \verb|DRAW|,
 				\verb|UNDRAW| and \verb|DTOG| words.
 
 			\item[DOT]\texttt{dotcol dotrow --- }\\
@@ -254,6 +254,9 @@
 				a jump table for the routine you wish to call. The offset \textit{n}
 				must be one of the predefined even numbers. See system Forth screen 
 				\textbf{TODO} for offsets \textbf{...}.
+
+			\item[UNDRAW]\texttt{--- }\\
+				Sets DMODE to 1. This means that dots are plotted in the off mode.
 
 			\item[VAND]\texttt{b vaddr --- }\\
 				Performs a logical AND on the byte at the specified VDP location
