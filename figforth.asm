@@ -62,9 +62,9 @@ FIGREL	.EQU	1		;FIG RELEASE #
 FIGREV	.EQU	3		;FIG REVISION #
 USRVER	.EQU	63H		;USER VERSION # DT - 2021/01/17
 ;
-;Console & printer drivers are in external source named
-;CONPRTIO.FTH & disc drivers in DISCIO.FTH. It has 4 screen
-;buffers & end of memory is set to FBASE from locn. 0007H.
+; Console & printer drivers are in external source named
+; CONPRTIO.ASM & disc drivers in DISCIO.ASM. It has 4 screen
+; buffers & end of memory is set to FBASE from locn. 0007H.
 	.EJECT
 ;	ASCII characters used
 ;

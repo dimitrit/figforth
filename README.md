@@ -84,16 +84,16 @@ from `addr1` to `HERE` and storing it at `addr1`.
 
 `FILE`&nbsp;&nbsp;&nbsp;&nbsp;` cccc `   
 <ul>
-Close the current .FTH file, and opens the given file. Note that a 
+Close the current .SCR file, and opens the given file. Note that a 
 file can be loaded automatically on startup by specifying its name on 
-the command line, e.g. `FORTH SCREENS.FTH`. Startup will be aborted 
+the command line, e.g. `FORTH SCREENS.SCR`. Startup will be aborted 
 with a `No File` error message if the file cannot be opened.
 </ul>
 
 `FTYPE`&nbsp;&nbsp;&nbsp;&nbsp;` --- addr `   
 <ul>
 A constant containing the three character file type used by `FILE`.   
-Defaults to **.FTH**.
+Defaults to **.SCR**.
 </ul>
 
 `OF`&nbsp;&nbsp;&nbsp;&nbsp;` --- addr  n ` _(compiling)_   
@@ -150,7 +150,7 @@ YMDHMS. Each byte is BCD encoded.
 </ul>
 
 ## fig-FORTH Editor
-The fig-FORTH EDITOR<sup>8</sup> is included in the `SCREENS.FTH` file:
+The fig-FORTH EDITOR<sup>8</sup> is included in the `SCREENS.SCR` file:
 ```
 FILE SCREENS ↵ ok
 7 12 INDEX ↵

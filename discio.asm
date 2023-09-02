@@ -304,7 +304,7 @@ FOPEN	.WORD	DOCOL			; user number. A true flag indicates failure.
 	.BYTE	'E'+$80			; Returns address of file type used
 	.WORD	FOPEN-8			; with FILE.
 FTYPE	.WORD	DOCON,DEFFT
-DEFFT	.TEXT	"FTH"			; default file type
+DEFFT	.TEXT	"SCR"			; default file type
 ;
 	.BYTE	84H			; FILE used in the form 
 	.TEXT	"FIL"			;     FILE cccc
