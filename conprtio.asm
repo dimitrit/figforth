@@ -115,7 +115,8 @@ PEMIT1:	CALL	CPOUT		;send CHR to CON:
 				;and LST: if (EPRINT)=01H
 	JNEXT
 ;
-PCR:	LD	E,ACR
+PCR:	.WORD	$+2		; (CR) orphan
+	LD	E,ACR
 	CALL	CPOUT		;output CR
 	LD	E,LF
 	CALL	CPOUT		;and LF

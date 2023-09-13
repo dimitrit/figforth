@@ -60,7 +60,7 @@
 ;
 FIGREL	.EQU	1		;FIG RELEASE #
 FIGREV	.EQU	3		;FIG REVISION #
-USRVER	.EQU	63H		;USER VERSION # DT - 2021/01/17
+USRVER	.EQU	44H		;USER VERSION # DT - 2023/09/07
 ;
 ; Console & printer drivers are in external source named
 ; CONPRTIO.ASM & disc drivers in DISCIO.ASM. It has 4 screen
@@ -74,7 +74,7 @@ ADOT	.EQU	2EH		;.
 BELL	.EQU	07H		;^G
 BSIN	.EQU	08H		;backspace chr = ^H
 BSOUT	.EQU	08H
-HT	.EQU	09H		;^T 
+HT	.EQU	09H		;^T
 DLE	.EQU	10H		;^P
 LF	.EQU	0AH		;^J
 FF	.EQU	0CH		;^L
@@ -154,7 +154,7 @@ TIBINI:	.WORD	0		;/ INIT (TIB)
 ;	W	DE	sometimes output from
 ;			NEXT, may be altered
 ;			b4 JP'ing to NEXT,
-;			input only when 
+;			input only when
 ;			"DPUSH" called.
 ;	SP	SP	should be used only as
 ;			Data Stack accross
@@ -560,8 +560,9 @@ QTERM:	.WORD	$+2
 	.BYTE	'C'
 	.BYTE	'R'+$80
 	.WORD	QTERM-0CH
-CR:	.WORD	$+2
-	JP	PCR
+CR:	.WORD	DOCOL
+	.WORD	PCR
+	.WORD	SEMIS
 ;
 	.BYTE	85H		;CMOVE
 	.TEXT	"CMOV"
@@ -595,8 +596,8 @@ GCMOV	.WORD	$+2
 	LD	A,B
 	OR	C		; BC=0?
 	JR	Z,EXCMOV	; YES, DON'T MOVE ANYTHING
-	LDDR			; REVERSE XFER STRING 
-	JR	EXCMOV	; 
+	LDDR			; REVERSE XFER STRING
+	JR	EXCMOV	;
 ;
 	.BYTE	82H		;U*   16*16 unsigned multiply
 	.BYTE	'U'		;994 T cycles average (8080)
@@ -835,7 +836,7 @@ TOR:	.WORD	$+2
 	POP	DE
 	LD	HL,(RPP)
 	DEC	HL
-	LD	(HL),D		
+	LD	(HL),D
 	DEC	HL
 	LD	(HL),E		;/ (R1)<--(DE)
 	LD	(RPP),HL	;  (RP)<--(RP)
@@ -3277,7 +3278,7 @@ PTSTO:	.WORD	$+2
 	.EJECT
 #INCLUDE "CONPRTIO.ASM"
 	.EJECT
-#IFDEF ROMWBW 
+#IFDEF ROMWBW
 #INCLUDE "ROMWBW.ASM"
 PREVNFA	.EQU	BCD-5
 #ELSE
@@ -3511,13 +3512,13 @@ CASE:	.WORD	DOCOL
 	.BYTE	')'+$80
 	.WORD	CASE-7
 POF:	.WORD	$+2
-	POP	HL 
+	POP	HL
 	POP	DE
 	OR	A
-	SBC	HL,DE 
-	LD	A,L 		
+	SBC	HL,DE
+	LD	A,L
 	OR	H
- 	JP	NZ,POF1	
+ 	JP	NZ,POF1
 	INC	BC
 	INC	BC
 	JP	(IX)
@@ -3526,7 +3527,7 @@ POF1:	PUSH	DE
 ;
 	.BYTE	0C2H		;OF
 	.BYTE	'O'
-	.BYTE	'F'+$80	
+	.BYTE	'F'+$80
 	.WORD	POF-7
 OFF:	.WORD	DOCOL
 	.WORD	LIT
