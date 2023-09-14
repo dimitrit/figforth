@@ -21,11 +21,15 @@
 		\section{Introduction}
 		Support for NABU video and audio features\footnotemark{} is included
 		in \verb|NABU.SCR|. After loading the screens, use \verb|NABU| to invoke
-		the appropriate vocabulary. Refer to the NABU-HOWTO document for details 
+		the appropriate vocabulary. Refer to the NABU-HOWTO document for details
 		on configuring and using fig-FORTH on the NABU PC.
 
 		\section{Glossary}
 		\begin{description}
+			\item[?SCROLL]\texttt{ --- }\\
+				Checks the VDP cursor position, \verb|CURPOS|, and scrolls the
+				screen up 1 line if it is beyond \verb|SCRN_END|.
+
 			\item[\#MOTION]\texttt{n --- }\\
 				Sets sprite numbers 0 to \textit{n} - 1 in auto motion.
 
@@ -43,6 +47,9 @@
 				Places the four number (8-byte) pattern of a specified character char
 				on the stack. By default, the definition for character \textit{\#0}
 				resides at 800h.
+
+			\item[CLS]\texttt{ --- }\\
+				Clears the screen and moves the cursor to the top left position \verb|(0,0)|.
 
 			\item[COINC]\texttt{spr1 spr2 tol --- flag }\\
 				Detects a coincidence between two given sprites within a specified
@@ -79,7 +86,7 @@
 				column and a dot row on the stack and returns a byte \textit{b} with
 				only one bit set and a VDP address \textit{vaddr}. The dot referenced
 				by \verb|(dotcol,dotrow)| is translated by \verb|DDOT| to the address
-				\textit{vaddr} of the byte containing it and a mask \textit{b} that 
+				\textit{vaddr} of the byte containing it and a mask \textit{b} that
 				locates the dot within the byte.
 
 			\item[DELALL]\texttt{--- }\\
@@ -171,7 +178,7 @@
 
 			\item[PDT]\texttt{--- vaddr }\\
 				A constant which contains the VDP address of the Pattern Descriptor
-				Table. Defaul tvalue is 800h.
+				Table. Default value is 0.
 
 			\item[SATR]\texttt{--- vaddr }\\
 				A constant whose value vaddr is the VDP address of the Sprite
@@ -238,22 +245,11 @@
 			\item[SPRPUT]\texttt{dotcol dotrow spr --- }\\
 				Places a given sprite \textit{spr} at location \verb|(dotcol,dotrow)|.
 
-
-
 			\item[SSDT]\texttt{vaddr --- }\\
 				Places the Sprite Descriptor Table at the specified VDP address
 				\textit{vaddr} and initializes all sprite tables. The address given
 				must be on an even 2K boundary. This instruction must be executed
 				before sprites can be used.
-
-			\item[SYS\$]\texttt{--- addr }\\
-				A user variable that contains the address of the system support entry point.
-
-			\item[SYSTEM]\texttt{n --- }\\
-				Calls the system synonyms. You must specify an offset \textit{n} into
-				a jump table for the routine you wish to call. The offset \textit{n}
-				must be one of the predefined even numbers. See system Forth screen 
-				\textbf{TODO} for offsets \textbf{...}.
 
 			\item[UNDRAW]\texttt{--- }\\
 				Sets DMODE to 1. This means that dots are plotted in the off mode.
