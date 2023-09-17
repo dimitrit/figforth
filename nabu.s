@@ -18,19 +18,19 @@ SCR#0
  15
 
 SCR#1
-  0             * N A B U   F O R T H *
+  0              * N A B U   F O R T H *
   1
   2       THIS FORTH IMPLEMENTATION IS BASED ON
-  3         THE fig-FORTH MODEL AND TI FORTH,
-  4        COURTESY OF TEXAS INSTRUMENTS, 1983.
-  5
-  6    FOR INFORMATION AND DOCUMENTATION REFER TO:
+  3          THE fig-FORTH MODEL COURTESY OF
+  4           THE FORTH INTEREST GROUP, 1979
+  5             AND TI FORTH, COURTESY OF
+  6              TEXAS INSTRUMENTS, 1983.
   7
-  8       HTTPS://GITHUB.COM/DIMITRIT/FIGFORTH
+  8    FOR INFORMATION AND DOCUMENTATION REFER TO:
   9
- 10
- 11 FURTHER DISTRIBUTION MUST INCLUDE THE ABOVE NOTICE.
- 12
+ 10       HTTPS://GITHUB.COM/DIMITRIT/FIGFORTH
+ 11
+ 12 FURTHER DISTRIBUTION MUST INCLUDE THE ABOVE NOTICE.
  13
  14
  15
@@ -416,7 +416,25 @@ SCR#22
 SCR#23
   0 ( NABU PC fig-FORTH extensions - SEP 7, 2023)
   1 BASE @ >R HEX CR ." Loading NABU extensions "
-  2 : VWTR 80 OR SWAP A1 P! A1 P! ;
+  2 : AWTR ( B N --- ) 41 P! 40 P! ;
+  3 : SOUND ( CH N D --- ) SP@ C@ B AWTR SP@ 1+ C@ C AWTR
+  4    DROP SWAP >R 0 8 AWTR 0 9 AWTR 0 A AWTR 10 R@ 8 + AWTR
+  5    SP@ C@ R@ 2 * AWTR SP@ 1+ C@ R> 2 * 1+ AWTR DROP 0 D AWTR ;
+  6 : HONK ( --- ) 0 A02 880 SOUND ;
+  7 : BEEP ( --- ) 0 71 880 SOUND ;
+  8 0 6 AWTR 78 7 AWTR 0 8 AWTR 0 9 AWTR 0 A AWTR
+  9 0 B AWTR 0 C AWTR 0 D AWTR
+ 10
+ 11
+ 12
+ 13
+ 14
+ 15 R> BASE ! -->
+
+SCR#24
+  0 ( Graphics Primitives - SCR 1 of 4 )
+  1 BASE @ >R HEX ." ."
+  2 : VWTR ( B N --- ) 80 OR SWAP A1 P! A1 P! ;
   3 : VSBW ( B VADDR --- ) SP@ C@ A1 P! SP@ 1+ C@ 3F AND
   4        40 OR A1 P! DROP A0 P! ;
   5 : VSBR ( VADDR --- B ) SP@ C@ A1 P! SP@ 1+ C@ 3F AND
@@ -431,13 +449,13 @@ SCR#23
  14        DROP ;
  15 R> BASE ! -->
 
-SCR#24
-  0 ( Graphics Primitives - SCR 1 of 3 )
+SCR#25
+  0 ( Graphics Primitives - SCR 2 of 3 )
   1 BASE @ >R HEX ." ."
-  2 380 CONSTANT COLTAB 300 CONSTANT SATR 780 CONSTANT SMTN
-  3 0 CONSTANT PDT 800 CONSTANT SPDTAB
-  4 0 VARIABLE SCRN_BUF A0 ALLOT
-  5 28 VARIABLE SCRN_WIDTH 0 VARIABLE SCRN_START
+  2 0 CONSTANT COLTAB 0 CONSTANT SATR 0 CONSTANT SMTN
+  3 0 CONSTANT PDT 0 CONSTANT SPDTAB 0 CONSTANT VPDMDE
+  4 0 VARIABLE SCRN_BUF 280 ALLOT
+  5 0 VARIABLE SCRN_WIDTH 0 VARIABLE SCRN_START
   6 3C0 VARIABLE SCRN_END 0 VARIABLE CURPOS
   7 : CHAR ( W1 W2 W3 W4 CH --- )
   8   8 * PDT + >R -2 6 DO SP@ 1+ C@ PAD I + DUP >R C!
@@ -449,81 +467,63 @@ SCR#24
  14   SCRN_START @ SCRN_END @ OVER - 20 VFILL ;
  15 R> BASE ! -->
 
-SCR#25
+SCR#26
   0 ( Graphics Primitives - SCR 2 of 3 ) BASE @ >R HEX ." ."
   1 : VCHAR ( X Y CNT CH --- )
   2 >R >R SCRN_WIDTH @ * + SCRN_END @ SCRN_START @ - SWAP R>
   3 R> SWAP 0 DO SWAP OVER OVER SCRN_START @ + VSBW SCRN_WIDTH
   4 @ + ROT OVER OVER /MOD IF 1+ SCRN_WIDTH @ OVER OVER = IF -
   5 ELSE DROP ENDIF ENDIF ROT DROP ROT LOOP DROP DROP DROP ;
-  6 : HCHAR ( X Y CNT CH --- )
-  7   >R >R SCRN_WIDTH @ * + SCRN_START @ + R> R> VFILL ;
-  8 : COLOR ( FG BG CHSET --- ) >R SWAP 10 * + R> COLTAB + VSBW ;
-  9 : SCREEN ( C --- ) 7 VWTR ;
- 10
+  6 : HCHAR ( X Y CNT CH --- ) >R >R SCRN_WIDTH @ * +
+  7   SCRN_START @ + R> R> VFILL ;
+  8 : COLOR ( FG BG CHSET --- ) >R SWAP 10 * + R> COLTAB @ +
+  9   VSBW ;
+ 10 : SCREEN ( C --- ) 7 VWTR ;
  11
  12
  13
  14
- 15 R> BASE ! -->
-
-SCR#26
-  0 ( Graphics Primitives - SCR 3 of 3 ) BASE @ >R HEX ." ."
-  1 : (SCROLL) ( n --- ) >R
-  2   A0 R@ * SCRN_START @ + SCRN_WIDTH @ + SCRN_BUF A0 VMBR
-  3   SCRN_BUF R> A0 * SCRN_START @ + A0 VMBW ;
-  4 : ?SCROLL ( --- ) CURPOS @ 1+ SCRN_END @ > IF
-  5   SCRN_END @ SCRN_START @ - A0 / 0 DO I (SCROLL) LOOP
-  6   SCRN_END @ SCRN_WIDTH @ - CURPOS !
-  7   CURPOS @ SCRN_WIDTH @ 20 VFILL THEN ;
-  8 : (EMIT) ( CH --- ) DUP 8 = IF DROP CURPOS @ 1- DUP 0 <
-  9   IF DROP 0 THEN CURPOS ! CURPOS @ 1 20 VFILL
- 10   ELSE >R CURPOS @ 1 R> VFILL 1 CURPOS +!
- 11   ?SCROLL THEN ;
- 12 : (CR) ( --- ) CURPOS @ SCRN_START @ - DUP SCRN_WIDTH @
- 13   /MOD DROP - SCRN_WIDTH @ + SCRN_START @ + CURPOS !
- 14   ?SCROLL ;
  15 R> BASE ! -->
 
 SCR#27
-  0 ( VDP Modes )
-  1 BASE @ >R HEX ." ."
-  2 : TEXT 28 SCRN_WIDTH ! 1800 SCRN_START ! 1BC0 SCRN_END !
-  3   SCRN_START @ DUP CURPOS ! 3C0 20 VFILL
-  4   ' (EMIT) 2 - ' EMIT ! ' (CR) 2 - ' CR !
-  5   0 0 VWTR D2 1 VWTR 6 2 VWTR 0 4 VWTR F5 7 VWTR ;
-  6 : TEXT2 50 SCRN_WIDTH ! 1000 SCRN_START ! 1780 SCRN_END !
-  7   SCRN_START @ DUP CURPOS ! 780 20 VFILL
-  8   ' (EMIT) 2 - ' EMIT ! ' (CR) 2 - ' CR !
-  9   4 0 VWTR D2 1 VWTR 7 2 VWTR 0 4 VWTR F5 7 VWTR ;
- 10 : GRAPHICS 0 0 VWTR C0 1 VWTR 5 2 VWTR 80 3 VWTR 1 4 VWTR
- 11   20 5 VWTR 0 6 VWTR 1 7 VWTR ;
- 12
- 13
- 14 R> BASE ! SPACE ." Done!" CR
- 15 ;S
+  0 ( Graphics Primitives - SCR 3 of 3 ) BASE @ >R HEX ." ."
+  1 : (SCROLL) ( n s --- ) >R
+  2   DUP R@ * SCRN_START @ + SCRN_WIDTH @ + SCRN_BUF R@ VMBR
+  3   SCRN_BUF SWAP R@ * SCRN_START @ + R> VMBW ;
+  4 : ?SCROLL ( --- ) CURPOS @ 1+ SCRN_END @ > IF
+  5   SCRN_END @ SCRN_START @ - SCRN_WIDTH @ 8 * / 0 DO I
+  6   SCRN_WIDTH @ 8 * (SCROLL) LOOP SCRN_END @ SCRN_WIDTH @ -
+  7   CURPOS ! CURPOS @ SCRN_WIDTH @ 20 VFILL THEN ;
+  8 : (EMIT) ( CH --- ) DUP 7 = IF DROP HONK ELSE DUP 8 = IF
+  9   DROP CURPOS @ 1- CURPOS ! CURPOS @ 1 20 VFILL ELSE
+ 10   >R CURPOS @ 1 R> VFILL 1 CURPOS +! ?SCROLL THEN THEN ;
+ 11 : (CR) ( --- ) CURPOS @ SCRN_START @ - DUP SCRN_WIDTH @
+ 12   /MOD DROP - SCRN_WIDTH @ + SCRN_START @ + CURPOS !
+ 13   ?SCROLL ;
+ 14
+ 15 R> BASE ! -->
 
 SCR#28
-  0
-  1
-  2
-  3
-  4
-  5
-  6
-  7
-  8
-  9
- 10
- 11
- 12
- 13
- 14
- 15
+  0 ( VDP Modes - SCR 1 of 2 )
+  1 BASE @ >R HEX ." ."
+  2 : TEXT 28 SCRN_WIDTH ! 1800 SCRN_START ! 1BC0 SCRN_END !
+  3   CLS ' (EMIT) 2 - ' EMIT ! ' (CR) 2 - ' CR !
+  4   0 0 VWTR D2 1 VWTR 6 2 VWTR 0 4 VWTR F5 7 VWTR ;
+  5 : TEXT2 50 SCRN_WIDTH ! 1000 SCRN_START ! 1780 SCRN_END !
+  6   SCRN_START @ DUP CURPOS ! 780 20 VFILL
+  7   ' (EMIT) 2 - ' EMIT ! ' (CR) 2 - ' CR !
+  8   4 0 VWTR D2 1 VWTR 7 2 VWTR 0 4 VWTR F4 7 VWTR ;
+  9 : GRAPHICS 20 SCRN_WIDTH ! 1800 SCRN_START ! 1B00 SCRN_END !
+ 10   2000 COLTAB ! 1B00 SATR ! 3800 SPDTAB !
+ 11   CLS ' (EMIT) 2 - ' EMIT ! ' (CR) 2 - ' CR !
+ 12   2000 20 F6 VFILL
+ 12   0 0 VWTR C2 1 VWTR 6 2 VWTR 80 3 VWTR 0 4 VWTR
+ 13   36 5 VWTR 7 6 VWTR 1 7 VWTR ;
+ 15 R> BASE ! -->
 
 SCR#29
-  0
-  1
+  0 ( VDP Modes - SCR 2 of 2 )
+  1 BASE @ >R HEX ." ."
   2
   3
   4
@@ -537,9 +537,9 @@ SCR#29
  12
  13
  14
- 15
+ 15 R> BASE ! SPACE ." Done!" CR ;S
 
-SCRN#30
+SCR#30
   0 ( NABU-LIB Standard font definitions - SCR #1/7 )
   1 ( https://github.com/DJSures/NABU-LIB )
   2 BASE @ >R HEX 60 VARIABLE STDCHR
@@ -557,7 +557,7 @@ SCRN#30
  14 2000 , F820 , 2020 , 0000 , ( + )
  15 0000 , 0000 , 2020 , 0040 , ( , ) -->
 
-SCRN#31
+SCR#31
   0 ( NABU-LIB Standard font definition - SCR #2/7 )
   1 0000 , F800 , 0000 , 0000 , ( - )
   2 0000 , 0000 , 0000 , 0020 , ( . )
@@ -575,7 +575,7 @@ SCRN#31
  14 0000 , 0020 , 0020 , 0000 , ( : )
  15 0000 , 0020 , 2020 , 0040 , ( ; ) -->
 
-SCRN#32
+SCR#32
   0 ( NABU-LIB Standard font definition - SCR #3/7 )
   1 2010 , 8040 , 2040 , 0010 , ( < )
   2 0000 , 00F8 , 00F8 , 0000 , ( = )
@@ -593,7 +593,7 @@ SCRN#32
  14 2070 , 2020 , 2020 , 0070 , ( I )
  15 0808 , 0808 , 8808 , 0070 , ( J ) -->
 
-SCRN#33
+SCR#33
   0 ( NABU-LIB Standard font definition - SCR #4/7 )
   1 9088 , C0A0 , 90A0 , 0088 , ( K )
   2 8080 , 8080 , 8080 , 00F8 , ( L )
@@ -611,7 +611,7 @@ SCRN#33
  14 8888 , 2050 , 8850 , 0088 , ( X )
  15 8888 , 2050 , 2020 , 0020 , ( Y ) -->
 
-SCRN#34
+SCR#34
   0 ( NABU-LIB Standard font definition - SCR #5/7 )
   1 08F8 , 2010 , 8040 , 00F8 , ( Z )
   2 4078 , 4040 , 4040 , 0078 , ( [ )
@@ -629,7 +629,7 @@ SCRN#34
  14 0000 , 8078 , 88B8 , 0070 , ( g )
  15 0000 , 8888 , 88F8 , 0088 , ( h ) -->
 
-#SCRN#35
+SCR#35
   0 ( NABU-LIB Standard font definition - SCR #6/7 )
   1 0000 , 2070 , 2020 , 00F8 , ( i )
   2 0000 , 2070 , A020 , 00E0 , ( j )
@@ -647,7 +647,7 @@ SCRN#34
  14 0000 , 8888 , A090 , 0040 , ( v )
  15 0000 , 8888 , D8A8 , 0088 , ( w ) -->
 
-#SCRN#36
+SCR#36
   0 ( NABU-LIB Standard font definition - SCR #7/7 )
   1 0000 , 7088 , 7020 , 0088 , ( x )
   2 0000 , 5088 , 2020 , 0020 , ( y )
@@ -662,5 +662,77 @@ SCRN#34
  11 Use VMBW to load the standard font, eg:
  12
  13   HEX STDCHR 2 + 800 20 8 * + 60 VMBW
+ 14
+ 15
+
+SCR#37
+  0 ( NABU-LIB note definitions)
+  1 ( https://github.com/DJSures/NABU-LIB )
+  2 BASE @ >R HEX 48 VARIABLE NOTES
+  3 0D5C , 0C9C , 0BE7 , 0B3C , 0A9B , 0A02 , 0972 , 08EB ,
+  4 086A , 07F2 , 077F , 0714 , 06AE , 064E , 05F3 , 059E ,
+  5 054D , 0501 , 04B9 , 0475 , 0435 , 03F9 , 03BF , 038A ,
+  6 0357 , 0327 , 02F9 , 02CF , 02A6 , 0280 , 025C , 023A ,
+  7 021A , 01FC , 01DF , 01C5 , 01AB , 0193 , 017C , 0167 ,
+  8 0153 , 0140 , 012E , 011D , 010D , 00FE , 00EF , 00E2 ,
+  9 00D5 , 00C9 , 00BE , 00B3 , 00A9 , 00A0 , 0097 , 008E ,
+ 10 0086 , 007F , 0077 , 0071 , 006A , 0064 , 005F , 0059 ,
+ 11 0054 , 0050 , 004B , 0047 , 0043 , 003F , 003B , 0038 ,
+ 12 : MIDI ( N --- M ) 2 * 2+ NOTES + @ ;
+ 13 R> BASE ! ;S
+ 14
+ 15
+
+SCR#38
+  0
+  1
+  2
+  3
+  4
+  5
+  6
+  7
+  8
+  9
+ 10
+ 11
+ 12
+ 13
+ 14
+ 15
+
+SCR#39
+  0
+  1
+  2
+  3
+  4
+  5
+  6
+  7
+  8
+  9
+ 10
+ 11
+ 12
+ 13
+ 14
+ 15
+
+SCR#40
+  0
+  1
+  2
+  3
+  4
+  5
+  6
+  7
+  8
+  9
+ 10
+ 11
+ 12
+ 13
  14
  15
