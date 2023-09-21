@@ -432,7 +432,7 @@ SCR#23
  15 R> BASE ! -->
 
 SCR#24
-  0 ( Graphics Primitives - SCR 1 of 4 )
+  0 ( Graphics Primitives - SCR 1 of 5 )
   1 BASE @ >R HEX ." ."
   2 : VWTR ( B N --- ) 80 OR SWAP A1 P! A1 P! ;
   3 : VSBW ( B VADDR --- ) SP@ C@ A1 P! SP@ 1+ C@ 3F AND
@@ -450,25 +450,43 @@ SCR#24
  15 R> BASE ! -->
 
 SCR#25
-  0 ( Graphics Primitives - SCR 2 of 3 )
+  0 ( Graphics Primitives - SCR 2 of 5 )
   1 BASE @ >R HEX ." ."
   2 0 VARIABLE COLTAB 0 VARIABLE SATR 0 VARIABLE SMTN
-  3 0 VARIABLE PDT 0 VARIABLE SPDTAB 0 VARIABLE VPDMDE
-  4 0 VARIABLE SCRN_BUF 280 ALLOT
+  3 0 VARIABLE PDT 0 VARIABLE SPDTAB 0 VARIABLE VDPMDE
+  4 0 VARIABLE SCRN_BUF 280 ALLOT 0 VARIABLE VDPREG
   5 0 VARIABLE SCRN_WIDTH 0 VARIABLE SCRN_START
   6 3C0 VARIABLE SCRN_END 0 VARIABLE CURPOS
-  7 : CHAR ( W1 W2 W3 W4 CH --- )
-  8   8 * PDT + >R -2 6 DO SP@ 1+ C@ PAD I + DUP >R C!
-  9   SP@ C@ R> 1+ C! DROP -2 +LOOP PAD R> 8 VMBW ;
- 10 : CHARPAT ( CH --- W1 W2 W3 W4 )
- 11   8 * PDT + PAD 8 VMBR 8 0 DO PAD I + DUP >R C@ 100 *
- 12   R> 1+ C@ + 2 +LOOP ;
+  7
+  8
+  9
+ 10
+ 11
+ 12
  13 : CLS ( --- ) SCRN_START @ CURPOS !
  14   SCRN_START @ SCRN_END @ OVER - 20 VFILL ;
  15 R> BASE ! -->
 
 SCR#26
-  0 ( Graphics Primitives - SCR 2 of 3 ) BASE @ >R HEX ." ."
+  0 ( Graphics Primitives - SCR 3 of 5 )
+  1 BASE @ >R HEX ." ."
+  2 : (CHAR) >R -2 6 DO SP@ 1+ C@ PAD I + DUP >R C!
+  3   SP@ C@ R> 1+ C! DROP -2 +LOOP PAD R> 8 VMBW ;
+  4 : CHAR ( W1 W2 W3 W4 CH --- ) 8 * PDT @ + (CHAR) ;
+  5 : CHARPAT ( CH --- W1 W2 W3 W4 )
+  6   8 * PDT @ + PAD 8 VMBR 8 0 DO PAD I + DUP >R C@ 100 *
+  7   R> 1+ C@ + 2 +LOOP ;
+  8 : SPCHAR ( N1 N2 N3 N4 CH ) 8 * SPDTAB @ + (CHAR) ;
+  9
+ 10
+ 11
+ 12
+ 13
+ 14
+15 R> BASE ! -->
+
+SCR#27
+  0 ( Graphics Primitives - SCR 4 of 5 ) BASE @ >R HEX ." ."
   1 : VCHAR ( X Y CNT CH --- )
   2 >R >R SCRN_WIDTH @ * + SCRN_END @ SCRN_START @ - SWAP R>
   3 R> SWAP 0 DO SWAP OVER OVER SCRN_START @ + VSBW SCRN_WIDTH
@@ -485,8 +503,8 @@ SCR#26
  14 : SCREEN ( C --- ) 7 VWTR ;
  15 R> BASE ! -->
 
-SCR#27
-  0 ( Graphics Primitives - SCR 3 of 3 ) BASE @ >R HEX ." ."
+SCR#28
+  0 ( Graphics Primitives - SCR 5 of 5 ) BASE @ >R HEX ." ."
   1 : (SCROLL) ( n s --- ) >R
   2   DUP R@ * SCRN_START @ + SCRN_WIDTH @ + SCRN_BUF R@ VMBR
   3   SCRN_BUF SWAP R@ * SCRN_START @ + R> VMBW ;
@@ -503,29 +521,29 @@ SCR#27
  14
  15 R> BASE ! -->
 
-SCR#28
+SCR#29
   0 ( VDP Modes - SCR 1 of 2 )
   1 BASE @ >R HEX ." ."
   2 : TEXT 28 SCRN_WIDTH ! 1800 SCRN_START ! 1BC0 SCRN_END !
-  3   CLS ' (EMIT) 2 - ' EMIT ! ' (CR) 2 - ' CR !
+  3   CLS ' (EMIT) 2 - ' EMIT ! ' (CR) 2 - ' CR ! D2 VDPREG C!
   4   0 0 VWTR D2 1 VWTR 6 2 VWTR 0 4 VWTR F5 7 VWTR ;
   5 : TEXT2 50 SCRN_WIDTH ! 1000 SCRN_START ! 1780 SCRN_END !
-  6   SCRN_START @ DUP CURPOS ! 780 20 VFILL
+  6   SCRN_START @ DUP CURPOS ! 780 20 VFILL D2 VDPREG C!
   7   ' (EMIT) 2 - ' EMIT ! ' (CR) 2 - ' CR !
   8   4 0 VWTR D2 1 VWTR 7 2 VWTR 0 4 VWTR F4 7 VWTR ;
   9 : GRAPHICS 20 SCRN_WIDTH ! 1800 SCRN_START ! 1B00 SCRN_END !
- 10   2000 COLTAB ! 1B00 SATR ! 3800 SPDTAB !
+ 10   2000 COLTAB ! 1B00 SATR ! 3800 SPDTAB ! C2 VDPREG C!
  11   CLS ' (EMIT) 2 - ' EMIT ! ' (CR) 2 - ' CR !
  12   2000 20 F6 VFILL
  12   0 0 VWTR C2 1 VWTR 6 2 VWTR 80 3 VWTR 0 4 VWTR
  13   36 5 VWTR 7 6 VWTR 1 7 VWTR ;
  15 R> BASE ! -->
 
-SCR#29
+SCR#30
   0 ( VDP Modes - SCR 2 of 2 )
   1 BASE @ >R HEX ." ."
-  2
-  3
+  2 : MULTI ( TODO ) ;
+  3 : GRAPHICS2 ( TODO ) ;
   4
   5
   6
@@ -537,9 +555,27 @@ SCR#29
  12
  13
  14
- 15 R> BASE ! SPACE ." Done!" CR ;S
+ 15 R> BASE ! -->
 
-SCR#30
+SCR#31
+  0 ( Sprites - SCR 1 of 2 ) BASE @ >R HEX ." ."
+  1 : MAGNIFY ( N --- )
+  2   VDPREG C@ 0FC AND + DUP VDPREG C! 1 VWTR ;
+  3 : SPRPAT ( CH S --- ) 4 * SATR @ 2+ + VSBW ;
+  4 : SPRPUT ( DX DY S --- )
+  5   4 * SATR @ + >R 1- SWAP 100 U* DROP + SP@ R> 2 VMBW DROP ;
+  6 : SPRCOL ( C S --- ) 4 * SATR @ 3 + + DUP >R VSBR 0F0 AND OR
+  7   R> VSBW ;
+  8 : SPRITE ( DX DY COL CH S --- )
+  9   DUP >R SPRPAT R@ SPRCOL R> SPRPUT ;
+ 10
+ 11 R> BASE ! SPACE ." Done!" CR ;S
+ 12
+ 13
+ 14
+ 15
+
+SCR#32
   0 ( NABU-LIB Standard font definitions - SCR #1/7 )
   1 ( https://github.com/DJSures/NABU-LIB )
   2 BASE @ >R HEX 60 VARIABLE STDCHR
@@ -557,7 +593,7 @@ SCR#30
  14 2000 , F820 , 2020 , 0000 , ( + )
  15 0000 , 0000 , 2020 , 0040 , ( , ) -->
 
-SCR#31
+SCR#33
   0 ( NABU-LIB Standard font definition - SCR #2/7 )
   1 0000 , F800 , 0000 , 0000 , ( - )
   2 0000 , 0000 , 0000 , 0020 , ( . )
@@ -575,7 +611,7 @@ SCR#31
  14 0000 , 0020 , 0020 , 0000 , ( : )
  15 0000 , 0020 , 2020 , 0040 , ( ; ) -->
 
-SCR#32
+SCR#34
   0 ( NABU-LIB Standard font definition - SCR #3/7 )
   1 2010 , 8040 , 2040 , 0010 , ( < )
   2 0000 , 00F8 , 00F8 , 0000 , ( = )
@@ -593,7 +629,7 @@ SCR#32
  14 2070 , 2020 , 2020 , 0070 , ( I )
  15 0808 , 0808 , 8808 , 0070 , ( J ) -->
 
-SCR#33
+SCR#35
   0 ( NABU-LIB Standard font definition - SCR #4/7 )
   1 9088 , C0A0 , 90A0 , 0088 , ( K )
   2 8080 , 8080 , 8080 , 00F8 , ( L )
@@ -611,7 +647,7 @@ SCR#33
  14 8888 , 2050 , 8850 , 0088 , ( X )
  15 8888 , 2050 , 2020 , 0020 , ( Y ) -->
 
-SCR#34
+SCR#36
   0 ( NABU-LIB Standard font definition - SCR #5/7 )
   1 08F8 , 2010 , 8040 , 00F8 , ( Z )
   2 4078 , 4040 , 4040 , 0078 , ( [ )
@@ -629,7 +665,7 @@ SCR#34
  14 0000 , 8078 , 88B8 , 0070 , ( g )
  15 0000 , 8888 , 88F8 , 0088 , ( h ) -->
 
-SCR#35
+SCR#37
   0 ( NABU-LIB Standard font definition - SCR #6/7 )
   1 0000 , 2070 , 2020 , 00F8 , ( i )
   2 0000 , 2070 , A020 , 00E0 , ( j )
@@ -647,7 +683,7 @@ SCR#35
  14 0000 , 8888 , A090 , 0040 , ( v )
  15 0000 , 8888 , D8A8 , 0088 , ( w ) -->
 
-SCR#36
+SCR#38
   0 ( NABU-LIB Standard font definition - SCR #7/7 )
   1 0000 , 7088 , 7020 , 0088 , ( x )
   2 0000 , 5088 , 2020 , 0020 , ( y )
@@ -665,7 +701,7 @@ SCR#36
  14
  15
 
-SCR#37
+SCR#39
   0 ( NABU-LIB note definitions)
   1 ( https://github.com/DJSures/NABU-LIB )
   2 BASE @ >R HEX 48 VARIABLE NOTES
@@ -683,43 +719,133 @@ SCR#37
  14
  15
 
-SCR#38
-  0
-  1
-  2
-  3
-  4
-  5
-  6
-  7
-  8
-  9
- 10
- 11
- 12
- 13
- 14
- 15
-
-SCR#39
-  0
-  1
-  2
-  3
-  4
-  5
-  6
-  7
-  8
-  9
- 10
- 11
- 12
- 13
- 14
- 15
-
 SCR#40
+  0 ( SPRITES DEMO [SCR 1 OF 2]                   DT 21-SEP-23 )
+  1 GRAPHICS CLS 2 MAGNIFY HEX ( KNIGHT SPRITE PATTERN )
+  2 0103 1312 1313 1317 0 SPCHAR 3F1F 1B13 0303 0303 1 SPCHAR
+  3 C0E0 E020 E0E0 E0FE 2 SPCHAR F6E2 F6FC 6860 6060 3 SPCHAR
+  4 0103 1312 1313 1317 4 SPCHAR 3F1F 1B13 0303 0000 5 SPCHAR
+  5 C0E0 E020 E0E0 E0FE 6 SPCHAR F6E2 F6FC 6860 6060 7 SPCHAR
+  6 0103 1312 1313 1317 8 SPCHAR 3F1F 1B13 0303 0303 9 SPCHAR
+  7 C0E0 E020 E0E0 E0FE A SPCHAR F6E2 F6FC 6860 0000 B SPCHAR
+  8 50 VARIABLE DX 25 VARIABLE DY 1 VARIABLE SPD
+  9 : RUN 1 SPD ! ;
+ 10 : WALK 2 SPD ! ;
+ 11 : JUMP DX @ DY @ 2 - 0 SPRPUT 800 0 DO LOOP
+ 12   DX @ DY @ 0 SPRPUT ;
+ 13 : CLOAK 0 0 SPRCOL ;
+ 14 : UNCLOAK 2 0 SPRCOL ;
+ 15  -->
+
+SCR#41
+  0 ( SPRITES DEMO [SCR 2 OF 2]                   DT 21-SEP-23 )
+  1 : ANIMATE 2 MOD 4 * 4 + 0 SPRPAT ;
+  2 : MOVEX DO I ANIMATE I DY @ 0 SPRPUT SPD @ 200 * 0 DO LOOP
+  3   DX @ OVER + DX ! DUP +LOOP DROP 0 0 SPRPAT ;
+  4 : MOVEY DO I ANIMATE DX @ I 0 SPRPUT SPD @ 200 * 0 DO LOOP
+  5   DY @ OVER + DY ! DUP +LOOP DROP 0 0 SPRPAT ;
+  6 : LEFT -1 DX @ DUP 10 - SWAP MOVEX ;
+  7 : RIGHT 1 DX @ DUP 10 + SWAP MOVEX ;
+  8 : UP -1 DY @ DUP 10 - SWAP MOVEY ;
+  9 : DOWN 1 DY @ DUP 10 + SWAP MOVEY ;
+ 10
+ 11 DX @ DY @ 2 0 0 SPRITE ;S
+ 12
+ 13   A SIMPLE SPRITE DEMO THAT ALLOWS YOU TO WALK (OR RUN) A
+ 14   KNIGHT AROUND THE SCREEN.
+ 15
+
+SCR#42
+  0
+  1
+  2
+  3
+  4
+  5
+  6
+  7
+  8
+  9
+ 10
+ 11
+ 12
+ 13
+ 14
+ 15
+
+SCR#43
+  0
+  1
+  2
+  3
+  4
+  5
+  6
+  7
+  8
+  9
+ 10
+ 11
+ 12
+ 13
+ 14
+ 15
+
+SCR#44
+  0
+  1
+  2
+  3
+  4
+  5
+  6
+  7
+  8
+  9
+ 10
+ 11
+ 12
+ 13
+ 14
+ 15
+
+SCR#45
+  0
+  1
+  2
+  3
+  4
+  5
+  6
+  7
+  8
+  9
+ 10
+ 11
+ 12
+ 13
+ 14
+ 15
+
+SCR#46
+  0
+  1
+  2
+  3
+  4
+  5
+  6
+  7
+  8
+  9
+ 10
+ 11
+ 12
+ 13
+ 14
+ 15
+
+SCR#47
   0
   1
   2
