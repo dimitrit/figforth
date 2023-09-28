@@ -1,0 +1,377 @@
+SCR#0
+  0
+  1
+  2
+  3
+  4
+  5
+  6
+  7
+  8
+  9
+ 10
+ 11
+ 12
+ 13
+ 14
+ 15
+
+SCR#1
+  0
+  1
+  2
+  3
+  4
+  5
+  6
+  7
+  8
+  9
+ 10
+ 11
+ 12
+ 13
+ 14
+ 15
+
+SCR#2
+  0
+  1
+  2
+  3
+  4
+  5
+  6
+  7
+  8
+  9
+ 10
+ 11
+ 12
+ 13
+ 14
+ 15
+
+SCR#3
+  0
+  1
+  2
+  3
+  4
+  5
+  6
+  7
+  8
+  9
+ 10
+ 11
+ 12
+ 13
+ 14
+ 15
+
+SCR#4
+  0 (  ERROR MESSAGES  )
+  1 EMPTY STACK
+  2 DICTIONARY FULL
+  3 HAS INCORRECT ADDRESS MODE
+  4 ISN'T UNIQUE
+  5
+  6 DISC RANGE ?
+  7 FULL STACK
+  8 DISC ERROR !
+  9
+ 10
+ 11
+ 12
+ 13
+ 14
+ 15 FORTH INTEREST GROUP                                 MAY 1, 1979
+
+SCR#5
+  0 (  ERROR MESSAGES  )
+  1 COMPILATION ONLY, USE IN DEFINITION
+  2 EXECUTION ONLY
+  3 CONDITIONALS NOT PAIRED
+  4 DEFINITON NOT FINISHED
+  5 IN PROTECTED DICTIONARY
+  6 USE ONLY WHEN LOADING
+  7 DECLARE VOCABULARY
+  8 OFF CURRENT EDITING SCREEN
+  9
+ 10
+ 11
+ 12
+ 13
+ 14
+ 15 FORTH INTEREST GROUP                                 MAY 1, 1979
+
+SCR#6
+  0
+  1
+  2
+  3
+  4
+  5
+  6
+  7
+  8
+  9
+ 10
+ 11
+ 12
+ 13
+ 14
+ 15
+
+SCR#7
+  0
+  1
+  2
+  3
+  4
+  5
+  6
+  7
+  8
+  9
+ 10
+ 11
+ 12
+ 13
+ 14
+ 15
+
+SCR#8
+  0
+  1
+  2
+  3
+  4
+  5
+  6
+  7
+  8
+  9
+ 10
+ 11
+ 12
+ 13
+ 14
+ 15
+
+SCR#9
+  0
+  1
+  2
+  3
+  4
+  5
+  6
+  7
+  8
+  9
+ 10
+ 11
+ 12
+ 13
+ 14
+ 15
+
+SCR#10
+  0 ( SPRITES DEMO [SCR 1 OF 3]                   DT 21-SEP-23 )
+  1 GRAPHICS CLS 2 MAGNIFY HEX ( KNIGHT SPRITE PATTERN )
+  2 0103 1312 1313 1317 0 SPCHAR 3F1F 1B13 0303 0303 1 SPCHAR
+  3 C0E0 E020 E0E0 E0FE 2 SPCHAR F6E2 F6FC 6860 6060 3 SPCHAR
+  4 0103 1312 1313 1317 4 SPCHAR 3F1F 1B13 0303 0000 5 SPCHAR
+  5 C0E0 E020 E0E0 E0FE 6 SPCHAR F6E2 F6FC 6860 6060 7 SPCHAR
+  6 0103 1312 1313 1317 8 SPCHAR 3F1F 1B13 0303 0303 9 SPCHAR
+  7 C0E0 E020 E0E0 E0FE A SPCHAR F6E2 F6FC 6860 0000 B SPCHAR
+  8 0103 1312 1313 1317 C SPCHAR 3F1F 1B13 0303 0000 D SPCHAR
+  9 C0E0 E020 E0E0 E0FE E SPCHAR F6E2 F6FC 6860 0000 F SPCHAR
+ 10 0103 0382 8343 4327 10 SPCHAR 2F3F 1B13 0303 0303 11 SPCHAR
+ 11 C0E0 E020 E0E0 E0FE 12 SPCHAR F6E2 F6FC 6860 6060 13 SPCHAR
+ 12 50 VARIABLE DX 25 VARIABLE DY 2 VARIABLE SPD 2 VARIABLE HGHT
+ 13 : RUN 1 SPD ! ;
+ 14 : WALK 2 SPD ! ;
+ 15 : HIGH 6 HGHT ! ;  -->
+
+SCR#11
+  0 ( SPRITES DEMO [SCR 2 OF 3] )
+  1 : DELAY 0 DO LOOP ;
+  2 : JUMP DX @ DY @ 2DUP 2+ C 0 SPRPAT 0 SPRPUT 400 DELAY
+  3   0 0 SPRPAT 2DUP 0 SPRPUT 100 DELAY 2DUP HGHT @ - 0 SPRPUT
+  4   800 DELAY 0 SPRPUT 2 HGHT ! ;
+  5 : DUCK DX @ DY @ 2DUP 2+ C 0 SPRPAT 0 SPRPUT 1200 DELAY
+  6   0 0 SPRPAT 0 SPRPUT ;
+  7 : STRIKE 10 0 SPRPAT 1000 DELAY 0 0 SPRPAT ;
+  8 : CLOAK 0 0 SPRCOL ;
+  9 : UNCLOAK 2 0 SPRCOL ;
+ 10 : ANIMATE 2 MOD 4 * 4 + 0 SPRPAT ;
+ 11 : MOVE ( N PTR --- )
+ 12   DUP PAD ! @ OVER 10 * OVER + SWAP
+ 13   DO PAD @ @ OVER + PAD @ ! I ANIMATE DX @ DY @ 0 SPRPUT
+ 14   SPD @ 200 * DELAY DUP +LOOP DROP 0 0 SPRPAT ;
+ 15 -->
+
+SCR#12
+  0 ( SPRITES DEMO [SCR 3 OF 2] )
+  1 : LEFT -1 DX MOVE ;
+  2 : RIGHT 1 DX MOVE ;
+  3 : UP -1 DY MOVE ;
+  4 : DOWN 1 DY MOVE ;
+  5
+  6 DX @ DY @ 2 0 0 SPRITE ;S
+  7
+  8  A SIMPLE DEMO THAT ALLOWS YOU TO WALK (OR RUN OR JUMP) A
+  9  GREEN KNIGHT AROUND THE SCREEN.
+ 10
+ 11
+ 12
+ 13
+ 14
+ 15
+
+SCR#13
+  0
+  1
+  2
+  3
+  4
+  5
+  6
+  7
+  8
+  9
+ 10
+ 11
+ 12
+ 13
+ 14
+ 15
+
+SCR#14
+  0
+  1
+  2
+  3
+  4
+  5
+  6
+  7
+  8
+  9
+ 10
+ 11
+ 12
+ 13
+ 14
+ 15
+
+SCR#15
+  0
+  1
+  2
+  3
+  4
+  5
+  6
+  7
+  8
+  9
+ 10
+ 11
+ 12
+ 13
+ 14
+ 15
+
+SCR#16
+  0
+  1
+  2
+  3
+  4
+  5
+  6
+  7
+  8
+  9
+ 10
+ 11
+ 12
+ 13
+ 14
+ 15
+
+SCR#17
+  0
+  1
+  2
+  3
+  4
+  5
+  6
+  7
+  8
+  9
+ 10
+ 11
+ 12
+ 13
+ 14
+ 15
+
+SCR#18
+  0
+  1
+  2
+  3
+  4
+  5
+  6
+  7
+  8
+  9
+ 10
+ 11
+ 12
+ 13
+ 14
+ 15
+
+SCR#19
+  0
+  1
+  2
+  3
+  4
+  5
+  6
+  7
+  8
+  9
+ 10
+ 11
+ 12
+ 13
+ 14
+ 15
+
+ SCR#20
+  0
+  1
+  2
+  3
+  4
+  5
+  6
+  7
+  8
+  9
+ 10
+ 11
+ 12
+ 13
+ 14
+ 15
