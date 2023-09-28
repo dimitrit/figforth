@@ -5,6 +5,9 @@
 *.com
 *.bin
 *.img
+*.dsk
 *.lst
+*.scr
 .idea
 .DS_Store
+diskdefs
