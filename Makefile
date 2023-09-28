@@ -1,22 +1,28 @@
-figforth: figforth.img
+ASMSOURCES = conprtio.asm discio.asm figforth.asm romwbw.asm
+NABUSCRS = nabu.scr knight.scr scooby.scr
+CPMSCRS = screens.scr
 
-figforth.img: figforth.com SCREENS.SCR
-	@rm -f figforth.img
-	@mkfs.cpm -f wbw_fd144 figforth.img
-	@cpmcp -f wbw_fd144 figforth.img figforth.com 0:forth.com
-	@cpmcp -f wbw_fd144 figforth.img SCREENS.SCR 0:screens.scr
+all: figforth.img nabu.dsk
 
-NABU.DSK: figforth.com NABU.SCR
-	@rm -f NABU.DSK
-	@mkfs.cpm -f naburn8mb NABU.DSK
-	@cpmcp -f naburn8mb NABU.DSK figforth.com 0:forth.com
-	@cpmcp -f naburn8mb NABU.DSK NABU.SCR 0:nabu.scr
+forth.com: $(ASMSOURCES)
+	uz80as -V -t z80 figforth.asm $@ figforth.lst
 
-figforth.com: conprtio.asm discio.asm figforth.asm romwbw.asm
-	@uz80as -V -t z80 figforth.asm figforth.com figforth.lst
+$(CPMSCRS) $(NABUSCRS): %.scr: %.s
+	./txt2scr.sh -s127 $< > $@
 
-NABU.SCR: nabu.s
-	./txt2scr.sh nabu.s > NABU.SCR
+figforth.img: forth.com $(CPMSCRS)
+	dd if=/dev/zero of=$@ bs=512 count=2880
+	mkfs.cpm -f wbw_fd144 $@
+	$(foreach SCR, forth.com $(CPMSCRS), \
+		cpmcp -f wbw_fd144 $@ $(SCR) 0:$(SCR) ; \
+	)
+
+nabu.dsk: forth.com $(NABUSCRS)
+	dd if=/dev/zero of=$@ bs=512 count=16384
+	mkfs.cpm -f naburn8mb $@
+	$(foreach SCR, forth.com $(NABUSCRS), \
+		cpmcp -f naburn8mb $@ $(SCR) 0:$(SCR) ; \
+	)
 
 clean:
-	@rm -f *.lst *.img *.com NABU.SCR
+	@rm -f *.lst *.img *.dsk *.com *.scr
