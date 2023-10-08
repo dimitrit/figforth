@@ -1,5 +1,5 @@
 ASMSOURCES = conprtio.asm discio.asm figforth.asm romwbw.asm
-NABUSCRS = nabu.scr knight.scr scooby.scr
+NABUSCRS = nabu.scr knight.scr scooby.scr daf44.scr
 CPMSCRS = screens.scr
 
 all: figforth.img nabu.dsk
